@@ -1,39 +1,44 @@
 <?php
-
 namespace App\Http\Controllers;
 
-use App\Services\DashboardService;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    protected $dashboardService;
-
-    public function __construct(DashboardService $dashboardService)
+    public function index(Request $request)
     {
-        $this->dashboardService = $dashboardService;
-    }
+        // ambil dari DB sesuai kebutuhan; contoh mock data:
+        $days = $request->query('days', 30);
 
-    public function index()
-    {
-        $statistics = $this->dashboardService->getStatistics();
-        $stockChart = $this->dashboardService->getStockChartData();
-        $lowStockProducts = $this->dashboardService->getLowStockProducts(5);
-        $recentTransactions = $this->dashboardService->getRecentTransactions(8);
-        $recentActivities = $this->dashboardService->getRecentActivities(8);
-        $topProducts = $this->dashboardService->getTopProductsByValue(5);
-        $categoryDistribution = $this->dashboardService->getCategoryDistribution();
-        $monthlyTransactionSummary = $this->dashboardService->getMonthlyTransactionSummary();
+        $productCount = \App\Models\Product::count();
+        $incomingCount = \App\Models\Transaction::where('type','in')->where('created_at','>=',now()->subDays($days))->count();
+        $outgoingCount = \App\Models\Transaction::where('type','out')->where('created_at','>=',now()->subDays($days))->count();
+        $totalStock = \App\Models\Product::sum('stock');
+
+        // contoh data untuk chart
+        $labels = [];
+        $values = [];
+        for ($i = $days-1; $i >= 0; $i--) {
+            $labels[] = now()->subDays($i)->format('d M');
+            // hitung total stok per hari atau ambil ringkasan
+            $values[] = rand(50, 200); // ganti dengan agregasi nyata
+        }
+
+        $recentActivities = \App\Models\Activity::latest()->limit(6)->get()->map(function($a){
+            return [
+                'user' => $a->user->name ?? 'User',
+                'action' => $a->description,
+                'time' => $a->created_at->diffForHumans(),
+                'avatar' => $a->user ? "https://ui-avatars.com/api/?name=" . urlencode($a->user->name) : null
+            ];
+        })->toArray();
 
         return view('dashboard', compact(
-            'statistics',
-            'stockChart',
-            'lowStockProducts',
-            'recentTransactions',
-            'recentActivities',
-            'topProducts',
-            'categoryDistribution',
-            'monthlyTransactionSummary'
-        ));
+            'productCount','incomingCount','outgoingCount','totalStock',
+            'labels','values','recentActivities'
+        ))->with([
+            'stockLabels' => $labels,
+            'stockValues' => $values
+        ]);
     }
 }
