@@ -11,11 +11,11 @@
 
     <form method="GET" class="mb-4">
         <div class="flex gap-2">
-            <input name="q" value="{{ request('q') }}" class="w-full border rounded px-3 py-2" placeholder="Cari nama / SKU...">
+            <input name="q" value="{{ request('q') }}" class="flex-1 border rounded px-3 py-2" placeholder="Cari nama / SKU...">
             <select name="category" class="border rounded px-2 py-2">
                 <option value="">Semua kategori</option>
-                @foreach(\App\Models\Category::all() as $cat)
-                <option value="{{ $cat->id }}" @selected(request('category') == $cat->id)>{{ $cat->name }}</option>
+                @foreach($categories ?? \App\Models\Category::orderBy('name')->get() as $cat)
+                    <option value="{{ $cat->id }}" @selected(request('category') == $cat->id)>{{ $cat->name }}</option>
                 @endforeach
             </select>
             <button class="px-4 py-2 bg-indigo-600 text-white rounded">Cari</button>
@@ -42,8 +42,8 @@
                     <td class="px-4 py-3">{{ $product->name }}</td>
                     <td class="px-4 py-3">{{ $product->sku }}</td>
                     <td class="px-4 py-3">{{ $product->category->name ?? '-' }}</td>
-                    <td class="px-4 py-3 text-right">{{ $product->stock }}</td>
-                    <td class="px-4 py-3 text-right">Rp {{ number_format($product->price) }}</td>
+                    <td class="px-4 py-3 text-right">{{ $product->stock ?? 0 }}</td>
+                    <td class="px-4 py-3 text-right">Rp {{ number_format($product->price ?? 0, 2, ',', '.') }}</td>
                     <td class="px-4 py-3 text-center">
                         <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:underline mr-2">Edit</a>
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus produk?')">
@@ -58,7 +58,6 @@
             </tbody>
         </table>
     </div>
-
     <div class="mt-4">
         {{ $products->withQueryString()->links() }}
     </div>
