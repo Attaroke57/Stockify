@@ -114,7 +114,7 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('stock.index') }}" class="{{ request()->routeIs('stock.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-blue dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Stok</a>
+                    <a href="{{ route('stocks.index') }}" class="{{ request()->routeIs('stocks.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-blue dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Stok</a>
                 </li>
 
                 <li>

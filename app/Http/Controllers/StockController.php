@@ -2,44 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\StockService;
+use App\Models\StockTransaction;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class StockController extends Controller
 {
-    protected $stockService;
-
-    public function __construct(StockService $stockService)
+    public function index()
     {
-        $this->stockService = $stockService;
+        $stocks = StockTransaction::with('product')->latest()->paginate(10);
+        return view('stocks.index', compact('stocks'));
     }
 
-    public function storeMasuk(Request $request)
+    public function create()
     {
-        $request->validate([
+        $products = Product::all();
+        return view('stocks.create', compact('products'));
+
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
-            'notes' => 'nullable|string',
+            'type' => 'required|in:masuk,keluar',
+            'description' => 'nullable|string|max:255',
         ]);
 
-        $this->stockService->addStock($request->product_id, $request->quantity, $request->notes);
+        StockTransaction::create($validated);
 
-        return response()->json(['message' => 'Barang masuk berhasil dicatat']);
+        return redirect()->route('stocks.index')->with('success', 'Transaksi stok berhasil ditambahkan.');
     }
 
-    public function storeKeluar(Request $request)
+    public function edit($id)
     {
-        $request->validate([
+        $stock = StockTransaction::findOrFail($id);
+        $products = Product::all();
+        return view('stocks.edit', compact('stock', 'products'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
-            'notes' => 'nullable|string',
+            'type' => 'required|in:masuk,keluar',
+            'notes' => 'nullable|string|max:255',
         ]);
 
-        try {
-            $this->stockService->reduceStock($request->product_id, $request->quantity, $request->notes);
-            return response()->json(['message' => 'Barang keluar berhasil dicatat']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
-        }
+        $stock = StockTransaction::findOrFail($id);
+        $stock->update($validated);
+
+
+
+        return redirect()->route('stocks.index')->with('success', 'Transaksi stok berhasil diperbarui.');
     }
+
+    public function destroy($id)
+    {
+        $stock = StockTransaction::findOrFail($id);
+        $stock->delete();
+
+        return redirect()->route('stocks.index')->with('success', 'Transaksi stok berhasil dihapus.');
+    }
+    
 }
