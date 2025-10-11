@@ -26,10 +26,9 @@ Route::get('products/export', [ProductController::class, 'export'])->name('produ
 // Suppliers - GUNAKAN RESOURCE (hapus yang lama)
 Route::resource('suppliers', SupplierController::class);
 
-// Stock
-Route::get('/stock', function () {
-    return view('stock.index');
-})->name('stock.index');
+Route::resource('stocks', StockController::class);
+
+
 
 // Reports
 Route::get('/reports', function () {
