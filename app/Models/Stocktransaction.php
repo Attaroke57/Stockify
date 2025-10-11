@@ -14,7 +14,7 @@ class StockTransaction extends Model
         'product_id',
         'quantity',
         'type',
-        'description',
+        'notes',
     ];
 
     public function product()
