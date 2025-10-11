@@ -43,7 +43,7 @@
                     <td class="px-4 py-3">{{ $product->sku }}</td>
                     <td class="px-4 py-3">{{ $product->category->name ?? '-' }}</td>
                     <td class="px-4 py-3 text-right">{{ $product->stock ?? 0 }}</td>
-                    <td class="px-4 py-3 text-right">Rp {{ number_format($product->price ?? 0, 2, ',', '.') }}</td>
+                    <td class="px-4 py-3 text-right">Rp {{ number_format($product->selling_price ?? 0, 2, ',', '.') }}</td>
                     <td class="px-4 py-3 text-center">
                         <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:underline mr-2">Edit</a>
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus produk?')">

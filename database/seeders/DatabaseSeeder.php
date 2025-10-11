@@ -15,12 +15,32 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Buat user admin
+        // 🔹 Admin
         User::factory()->create([
-            'name' => 'Admin Stockify',
+            'name' => 'Purnomo Admin Stockify',
             'email' => 'admin@stockify.test',
             'role' => 'admin',
             'password' => bcrypt('password'),
         ]);
+
+        // 🔹 Manajer Gudang
+        User::factory()->create([
+            'name' => 'Budi Manajer Gudang',
+            'email' => 'manager@stockify.test',
+            'role' => 'manager',
+            'password' => bcrypt('password'),
+        ]);
+
+        // 🔹 Staff Gudang
+        User::factory()->create([
+            'name' => 'Siti Staff Gudang',
+            'email' => 'staff@stockify.test',
+            'role' => 'staff',
+            'password' => bcrypt('password'),
+        ]);
+
+        // 🔹 Tambahan data dummy user lainnya (optional)
+        User::factory(5)->create();
 
         // Generate data dummy
         Category::factory(5)->create();

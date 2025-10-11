@@ -40,6 +40,7 @@ Route::get('/reports', function () {
 Route::get('/users', function () {
     return view('users.index');
 })->name('users.index');
+Route::resource('users', UserController::class);
 
 // Profile
 Route::get('/profile', function () {
