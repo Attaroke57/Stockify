@@ -16,18 +16,14 @@ Route::get('/', function () {
 });
 
 // Sementara untuk testing (nanti akan diganti dengan auth middleware)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-Route::get('/dashboardcontroller', function () {
-    return view('dashboard');
-})->name('dashboardcontroller');
+Route::get('/dashboardcontroller', [DashboardController::class, 'index'])->name('dashboardcontroller');
 
 // Temporary routes untuk testing navbar (nanti akan menggunakan controller sesungguhnya)
-Route::get('/products', function () {
-    return view('products.index');
-})->name('products.index');
+Route::resource('products', ProductController::class);
+Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
+Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
 
 Route::get('/stock', function () {
     return view('stock.index');
