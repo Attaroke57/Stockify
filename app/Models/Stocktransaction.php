@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class StockTransaction extends Model
 {
+        /** @use HasFactory<\Database\Factories\StockTransactionFactory> */
     use HasFactory;
 
     protected $fillable = [
