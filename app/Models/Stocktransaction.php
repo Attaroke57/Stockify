@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Product;
 
 class StockTransaction extends Model
 {
-        /** @use HasFactory<\Database\Factories\StockTransactionFactory> */
     use HasFactory;
 
     protected $fillable = [
         'product_id',
         'quantity',
         'type',
-        'notes',
+        'description',
     ];
 
     public function product()
