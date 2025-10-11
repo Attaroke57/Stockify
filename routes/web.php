@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StockController;
@@ -15,41 +14,44 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Sementara untuk testing (nanti akan diganti dengan auth middleware)
+// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-
 Route::get('/dashboardcontroller', [DashboardController::class, 'index'])->name('dashboardcontroller');
 
-// Temporary routes untuk testing navbar (nanti akan menggunakan controller sesungguhnya)
+// Products
 Route::resource('products', ProductController::class);
 Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
 Route::get('products/export', [ProductController::class, 'export'])->name('products.export');
 
+// Suppliers - GUNAKAN RESOURCE (hapus yang lama)
+Route::resource('suppliers', SupplierController::class);
+
+// Stock
 Route::get('/stock', function () {
     return view('stock.index');
 })->name('stock.index');
 
-Route::get('/suppliers', function () {
-    return view('suppliers.index');
-})->name('suppliers.index');
-
+// Reports
 Route::get('/reports', function () {
     return view('reports.index');
 })->name('reports.index');
 
+// Users
 Route::get('/users', function () {
     return view('users.index');
 })->name('users.index');
 
+// Profile
 Route::get('/profile', function () {
     return view('profile');
 })->name('profile');
 
+// Settings
 Route::get('/settings', function () {
     return view('settings');
 })->name('settings');
 
-// Logout route (sementara)
+// Logout
 Route::post('/logout', function () {
     // auth()->logout();
     return redirect('/');
