@@ -20,6 +20,7 @@ class ProductFactory extends Factory
             'selling_price' => fake()->randomFloat(2, 6000, 600000),
             'image' => fake()->imageUrl(400, 400, 'product', true),
             'minimum_stock' => fake()->numberBetween(1, 10),
+            'stock' => fake()->numberBetween(10, 100),
             'created_at' => now(),
         ];
     }
