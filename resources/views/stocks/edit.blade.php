@@ -30,8 +30,8 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Tipe Transaksi</label>
                     <select name="type" required
                         class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                        <option value="masuk" {{ $stock->type == 'masuk' ? 'selected' : '' }}>Masuk</option>
-                        <option value="keluar" {{ $stock->type == 'keluar' ? 'selected' : '' }}>Keluar</option>
+                        <option value="in" {{ $stock->type == 'in' ? 'selected' : '' }}>Masuk</option>
+                        <option value="out" {{ $stock->type == 'out' ? 'selected' : '' }}>Keluar</option>
                     </select>
                 </div>
 
