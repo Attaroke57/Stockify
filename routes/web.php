@@ -15,8 +15,11 @@ Route::get('/', function () {
 });
 
 // Dashboard
+// Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/data', [DashboardController::class, 'getData'])->name('dashboard.data');
+Route::get('/dashboard/data', [DashboardController::class, 'getChartData'])->name('dashboard.data');
+
+
 
 // Products
 Route::resource('products', ProductController::class);

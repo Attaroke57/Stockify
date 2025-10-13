@@ -83,7 +83,7 @@
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white">Grafik Stok Barang</h2>
                 <div class="text-sm text-gray-500 dark:text-gray-400">Periode terakhir</div>
             </div>
-            <canvas id="stockChart" class="w-full h-64"></canvas>
+            <canvas id="stockChart" height="120"></canvas>
         </div>
 
         <div class="bg-white border rounded-lg p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700">
@@ -114,60 +114,55 @@
     </div>
 </div>
 
-@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-(function(){
-    const ctxEl = document.getElementById('stockChart');
-    if (!ctxEl) return;
-    const ctx = ctxEl.getContext('2d');
+document.addEventListener("DOMContentLoaded", async () => {
+    const ctx = document.getElementById('stockChart').getContext('2d');
 
-    // initial data from server
-    let labels = @json($stockLabels ?? []);
-    let values = @json($stockValues ?? []);
+    // Ambil data dari endpoint
+    const response = await fetch('/dashboard/data');
+    const data = await response.json();
 
-    const chart = new Chart(ctx, {
+    console.log("Data chart:", data); // debug biar keliatan di console
+
+    if (!data || !data.labels || !data.values) {
+        console.error("Data chart tidak valid", data);
+        return;
+    }
+
+    // Buat chart
+    new Chart(ctx, {
         type: 'line',
         data: {
-            labels: labels,
+            labels: data.labels,
             datasets: [{
-                label: 'Total Stok',
-                data: values,
+                label: 'Total Stok Barang',
+                data: data.values,
                 borderColor: '#6366F1',
-                backgroundColor: 'rgba(99,102,241,0.12)',
+                backgroundColor: 'rgba(99, 102, 241, 0.2)',
                 fill: true,
-                tension: 0.3,
-                pointRadius: 3
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointBackgroundColor: '#6366F1'
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
             scales: {
-                x: { ticks: { color: '#6B7280' } },
-                y: { beginAtZero: true, ticks: { color: '#6B7280', precision: 0 } }
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
             }
         }
     });
-
-    async function loadData(days) {
-        try {
-            const res = await fetch(`/dashboard/data?days=${encodeURIComponent(days)}`);
-            if (!res.ok) throw new Error('Network response was not ok');
-            const json = await res.json();
-            chart.data.labels = json.labels || [];
-            chart.data.datasets[0].data = json.values || [];
-            chart.update();
-        } catch (err) {
-            console.error('Failed to load dashboard chart data', err);
-        }
-    }
-
-    document.getElementById('period')?.addEventListener('change', function(){
-        loadData(this.value);
-    });
-})();
+});
 </script>
-@endpush
+
+
 </x-layout>
