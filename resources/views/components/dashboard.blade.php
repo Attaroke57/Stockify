@@ -1,4 +1,3 @@
-
 <x-layout title="Dashboard">
 <div class="container mx-auto p-4">
     <!-- Header -->
@@ -118,43 +117,57 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    (function(){
-        const labels = @json($stockLabels ?? []);
-        const values = @json($stockValues ?? []);
+(function(){
+    const ctxEl = document.getElementById('stockChart');
+    if (!ctxEl) return;
+    const ctx = ctxEl.getContext('2d');
 
-        const canvas = document.getElementById('stockChart');
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
+    // initial data from server
+    let labels = @json($stockLabels ?? []);
+    let values = @json($stockValues ?? []);
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Stok',
-                    data: values,
-                    borderColor: '#6366F1',
-                    backgroundColor: 'rgba(99,102,241,0.08)',
-                    fill: true,
-                    tension: 0.3,
-                    pointRadius: 3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { ticks: { color: '#6B7280' } },
-                    y: { beginAtZero: true, ticks: { color: '#6B7280' } }
-                }
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Total Stok',
+                data: values,
+                borderColor: '#6366F1',
+                backgroundColor: 'rgba(99,102,241,0.12)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#6B7280' } },
+                y: { beginAtZero: true, ticks: { color: '#6B7280', precision: 0 } }
             }
-        });
+        }
+    });
 
-        document.getElementById('period')?.addEventListener('change', function(){
-            // fetch(`/dashboard/data?days=${this.value}`)...
-        });
-    })();
+    async function loadData(days) {
+        try {
+            const res = await fetch(`/dashboard/data?days=${encodeURIComponent(days)}`);
+            if (!res.ok) throw new Error('Network response was not ok');
+            const json = await res.json();
+            chart.data.labels = json.labels || [];
+            chart.data.datasets[0].data = json.values || [];
+            chart.update();
+        } catch (err) {
+            console.error('Failed to load dashboard chart data', err);
+        }
+    }
+
+    document.getElementById('period')?.addEventListener('change', function(){
+        loadData(this.value);
+    });
+})();
 </script>
 @endpush
 </x-layout>

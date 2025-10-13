@@ -2,6 +2,18 @@
 <div class="container mx-auto p-4">
     <h1 class="text-xl mb-4">Tambah Produk</h1>
 
+    @if(session('success'))
+    <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('general'))
+    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
+        {{ session('general') }}
+    </div>
+    @endif
+
     @if($errors->any())
     <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
         <ul class="text-sm">
@@ -23,13 +35,20 @@
         <label class="block text-sm">Kategori</label>
         <select name="category_id" class="w-full border rounded px-3 py-2 mb-3">
             <option value="">-- Pilih kategori --</option>
-            @foreach(\App\Models\Category::all() as $cat)
+            @foreach($categories ?? [] as $cat)
                 <option value="{{ $cat->id }}" @selected(old('category_id') == $cat->id)>{{ $cat->name }}</option>
             @endforeach
         </select>
 
         <label class="block text-sm">Harga</label>
-        <input name="price" value="{{ old('price') }}" type="number" step="0.01" class="w-full border rounded px-3 py-2 mb-3">
+        <input
+            name="price"
+            value="{{ old('price', '') }}"
+            type="text"
+            inputmode="decimal"
+
+            class="w-full border rounded px-3 py-2 mb-3"
+        >
 
         <label class="block text-sm">Stok</label>
         <input name="stock" value="{{ old('stock', 0) }}" type="number" class="w-full border rounded px-3 py-2 mb-3">
