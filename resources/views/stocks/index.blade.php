@@ -23,17 +23,19 @@
                     @foreach ($stocks as $stock)
                         <tr class="border-b hover:bg-gray-50">
                             <td class="px-6 py-4">{{ $loop->iteration }}</td>
-                            <td class="px-6 py-4">{{ $stock->product->nama ?? '-' }}</td>
+                            <td class="px-6 py-4">{{ $stock->product->name ?? '-' }}</td>
                             <td class="px-6 py-4">{{ $stock->quantity }}</td>
                             <td class="px-6 py-4">
-                                <span class="px-2 py-1 rounded-full text-xs
-                                    {{ $stock->type == 'masuk' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                <span
+                                    class="px-2 py-1 rounded-full text-xs
+                                    {{ $stock->type == 'in' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                     {{ ucfirst($stock->type) }}
                                 </span>
                             </td>
                             <td class="px-6 py-4">{{ $stock->notes ?? '-' }}</td>
                             <td class="px-6 py-4 text-center space-x-2">
-                                <a href="{{ route('stocks.edit', $stock->id) }}" class="text-yellow-500 hover:underline">Edit</a>
+                                <a href="{{ route('stocks.edit', $stock->id) }}"
+                                    class="text-yellow-500 hover:underline">Edit</a>
                                 <form action="{{ route('stocks.destroy', $stock->id) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')

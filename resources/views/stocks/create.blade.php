@@ -11,7 +11,7 @@
                     <select name="product_id" id="product_id" class="w-full border-gray-300 rounded-lg shadow-sm p-2">
                         <option value="">-- Pilih Produk --</option>
                         @foreach ($products as $product)
-                            <option value="{{ $product->id }}">{{ $product->nama }}</option>
+                            <option value="{{ $product->id }}">{{ $product->name }}</option>
                         @endforeach
                     </select>
                     @error('product_id')
@@ -30,19 +30,26 @@
 
                 <div class="mb-4">
                     <label for="type" class="block text-gray-700 font-medium mb-2">Tipe Transaksi</label>
-                    <select name="type" id="type" class="w-full border-gray-300 rounded-lg shadow-sm p-2" required>
-                        <option value="masuk">Masuk</option>
-                        <option value="keluar">Keluar</option>
+                    <select name="type" id="type" class="w-full border-gray-300 rounded-lg shadow-sm p-2"
+                        required>
+                        <option value="in">Masuk</option>
+                        <option value="out">Keluar</option>
                     </select>
                     @error('type')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
+                <div>
+                    <label for="date" class="block text-gray-700 font-medium mb-1">Tanggal Transaksi</label>
+                    <input type="date" name="date" required
+                        class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                </div>
+
+
                 <div class="mb-6">
                     <label for="description" class="block text-gray-700 font-medium mb-2">Keterangan</label>
-                    <textarea name="description" id="description" rows="3"
-                        class="w-full border-gray-300 rounded-lg shadow-sm p-2"></textarea>
+                    <textarea name="description" id="description" rows="3" class="w-full border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3">
