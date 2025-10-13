@@ -2,7 +2,7 @@
     <div class="container mx-auto px-6 py-8">
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Daftar Transaksi Stok</h1>
-            <a href="{{ route('stocks.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <a href="{{ route('stocks.create') }}" class="bg-blue-600 text-black px-4 py-2 rounded-lg hover:bg-blue-700">
                 + Tambah Transaksi
             </a>
         </div>

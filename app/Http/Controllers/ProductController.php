@@ -30,13 +30,46 @@ class ProductController extends Controller
         return view('products.index', compact('products', 'categories'));
     }
 
-    public function create(){ return view('products.create'); }
+    public function create()
+    {
+        $categories = \App\Models\Category::orderBy('name')->get();
+        return view('products.create', compact('categories'));
+    }
 
     public function store(Request $request)
     {
+        // debug raw input
+        Log::info('Product store request (raw)', ['price_raw' => $request->input('price')]);
+
+        // normalize price: handle "80.000", "1.234,56", "80000"
+        $rawPrice = $request->input('price', '');
+        if ($rawPrice !== null && $rawPrice !== '') {
+            $p = preg_replace('/\s+/', '', (string) $rawPrice);
+            if (strpos($p, ',') !== false) {
+                // format like 1.234,56 -> remove dots (thousands) and convert comma to dot
+                $p = str_replace('.', '', $p);
+                $p = str_replace(',', '.', $p);
+            } elseif (strpos($p, '.') !== false) {
+                // could be "80.000" (thousands) or "123.45" (decimal)
+                $parts = explode('.', $p);
+                $last = end($parts);
+                if (strlen($last) === 3) {
+                    // treat as thousands separators
+                    $p = str_replace('.', '', $p);
+                }
+                // else keep dot as decimal separator
+            }
+            // final check numeric
+            if ($p !== '' && !is_numeric($p)) {
+                return back()->withInput()->withErrors(['price' => 'Format harga tidak valid. Gunakan mis. 80000 atau 80.000 atau 1.234,56']);
+            }
+            // store normalized numeric string (e.g. "80000" or "1234.56")
+            $request->merge(['price' => $p]);
+        }
+
         $data = $request->validate([
             'name' => 'required|string',
-            'sku' => 'nullable|string|unique:products,sku',
+            'sku' => ['nullable','string', Rule::unique('products','sku')],
             'category_id' => 'nullable|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'price' => 'nullable|numeric',
@@ -45,7 +78,7 @@ class ProductController extends Controller
             'image' => 'nullable|image|max:2048',
         ]);
 
-        // jika sku kosong -> generate unik
+        // generate SKU if empty
         if (empty($data['sku'])) {
             do {
                 $sku = 'SKU-' . Str::upper(Str::random(8));
@@ -53,22 +86,23 @@ class ProductController extends Controller
             $data['sku'] = $sku;
         }
 
+        // handle image upload
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
-        // hanya gunakan kolom yang ada di tabel
+        // keep only existing DB columns to avoid SQL errors
         $columns = Schema::hasTable('products') ? Schema::getColumnListing('products') : [];
         $data = array_intersect_key($data, array_flip($columns));
 
         try {
             $product = Product::create($data);
+            Log::info('Product created', ['id' => $product->id, 'price_saved' => $product->price ?? null]);
+            return redirect()->route('products.index')->with('success', 'Produk berhasil dibuat.');
         } catch (\Exception $e) {
-            \Log::error('Product create error: '.$e->getMessage(), ['data'=>$data]);
-            return back()->withInput()->withErrors(['general'=>'Gagal menyimpan produk. Cek log.']);
+            Log::error('Product create failed', ['err' => $e->getMessage(), 'data' => $data]);
+            return back()->withInput()->withErrors(['general' => 'Gagal menyimpan produk. Periksa input atau cek log.']);
         }
-
-        return redirect()->route('products.index')->with('success','Produk disimpan.');
     }
 
     public function edit(Product $product){ return view('products.edit', compact('product')); }
@@ -91,11 +125,12 @@ class ProductController extends Controller
 
         try {
             $product->update($data);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return back()->withInput()->withErrors(['sku' => 'Terjadi kesalahan saat memperbarui. Pastikan SKU unik.']);
+            Log::info('Product updated', ['id' => $product->id]);
+            return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
+        } catch (\Exception $e) {
+            Log::error('Product update failed', ['err' => $e->getMessage(), 'id' => $product->id, 'data' => $data]);
+            return back()->withInput()->withErrors(['general' => 'Gagal memperbarui produk. Periksa input atau cek log.']);
         }
-
-        return redirect()->route('products.index')->with('success','Produk diperbarui.');
     }
 
     public function destroy(Product $product){ $product->delete(); return back()->with('success','Produk dihapus.'); }

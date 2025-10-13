@@ -20,6 +20,22 @@
     </div>
     @endif
 
+    @if(session('general'))
+    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
+        {{ session('general') }}
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
+        <ul class="text-sm">
+            @foreach($errors->all() as $err)
+                <li>{{ $err }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <div class="bg-white dark:bg-gray-800 border rounded-lg p-5 shadow">
         <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
             @csrf @method('PUT')

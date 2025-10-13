@@ -3,11 +3,23 @@
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-2xl font-semibold">Manajemen Produk</h1>
         <div class="flex items-center space-x-2">
-            <a href="{{ route('products.create') }}" class="btn btn-primary inline-flex items-center px-4 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">Tambah Produk</a>
-            <button data-modal-target="importModal" data-modal-toggle="importModal" class="px-4 py-2 rounded border bg-white hover:bg-gray-50">Import</button>
-            <a href="{{ route('products.export') }}" class="px-4 py-2 rounded border bg-white hover:bg-gray-50">Export</a>
+            <a href="{{ route('products.create') }}" class="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Tambah Produk</a>
+            <a href="{{ route('products.export') }}" class="px-3 py-2 border rounded-md text-sm hover:bg-gray-100">Export CSV</a>
+            <button data-modal-target="importModal" data-modal-toggle="importModal" class="px-3 py-2 border rounded-md text-sm">Import CSV</button>
         </div>
     </div>
+
+    @if(session('success'))
+    <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if(session('general'))
+    <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
+        {{ session('general') }}
+    </div>
+    @endif
 
     <form method="GET" class="mb-4">
         <div class="flex gap-2">
@@ -43,7 +55,7 @@
                     <td class="px-4 py-3">{{ $product->sku }}</td>
                     <td class="px-4 py-3">{{ $product->category->name ?? '-' }}</td>
                     <td class="px-4 py-3 text-right">{{ $product->stock ?? 0 }}</td>
-                    <td class="px-4 py-3 text-right">Rp {{ number_format($product->selling_price ?? 0, 2, ',', '.') }}</td>
+                    <td class="px-4 py-3 text-right">Rp {{ number_format($product->price ?? 0, 2, ',', '.') }}</td>
                     <td class="px-4 py-3 text-center">
                         <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:underline mr-2">Edit</a>
                         <form action="{{ route('products.destroy', $product) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus produk?')">
