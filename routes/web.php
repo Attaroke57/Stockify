@@ -16,7 +16,7 @@ Route::get('/', function () {
 
 // Dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboardcontroller', [DashboardController::class, 'index'])->name('dashboardcontroller');
+Route::get('/dashboard/data', [DashboardController::class, 'getData'])->name('dashboard.data');
 
 // Products
 Route::resource('products', ProductController::class);
@@ -31,9 +31,14 @@ Route::resource('stocks', StockController::class);
 
 
 // Reports
-Route::get('/reports', function () {
-    return view('reports.index');
-})->name('reports.index');
+Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+Route::get('reports/stock/export', [ReportController::class, 'exportStock'])->name('reports.stock.export');
+Route::get('reports/transactions', [ReportController::class, 'transactions'])->name('reports.transactions');
+Route::get('reports/transactions/export', [ReportController::class, 'exportTransactions'])->name('reports.transactions.export');
+Route::get('reports/activities', [ReportController::class, 'activities'])->name('reports.activities');
+Route::get('reports/activities/export', [ReportController::class, 'exportActivities'])->name('reports.activities.export');
+
 
 // Users
 Route::get('/users', function () {

@@ -15,15 +15,7 @@ class Product extends Model
      * Izinkan mass assignment untuk field yang digunakan di form/store/update.
      */
     protected $fillable = [
-        'name',
-        'sku',
-        'category_id',
-        'supplier_id',
-        'price',
-        'stock',
-        'description',
-        'image',
-        'attributes', // jika menyimpan json atribut
+        'name','sku','category_id','supplier_id','price','stock','description','image','attributes'
     ];
 
     // tambahkan cast
