@@ -118,15 +118,15 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Supplier</a>
+                    <a href="{{ route('suppliers.index') }}" class="{{ request()->routeIs('suppliers.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-blue dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Supplier</a>
                 </li>
 
                 <li>
-                    <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Laporan</a>
+                    <a href="{{ route('reports.index') }}" class="{{ request()->routeIs('reports.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-blue dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Laporan</a>
                 </li>
 
                 <li>
-                    <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'text-white bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Pengguna</a>
+                    <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'text-blue bg-indigo-700 md:bg-transparent md:text-indigo-700' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-indigo-700' }} block py-2 px-3 rounded md:p-0 dark:text-blue dark:hover:bg-gray-700 dark:hover:text-blue md:dark:hover:bg-transparent dark:border-gray-700">Pengguna</a>
                 </li>
             </ul>
         </div>
