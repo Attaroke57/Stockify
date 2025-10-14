@@ -16,9 +16,22 @@
                         Nama Supplier <span class="text-red-500">*</span>
                     </label>
                     <input type="text" id="name" name="name" value="{{ old('name', $supplier->name) }}"
-                           class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror"
-                           placeholder="Masukkan nama supplier" required>
+                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('name') border-red-500 @enderror"
+                        placeholder="Masukkan nama supplier" required>
                     @error('name')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="mb-6">
+                    <label for="contact_person" class="mb-2 block text-sm font-medium text-gray-900">
+                        Kontak Person
+                    </label>
+                    <input type="text" id="contact_person" name="contact_person"
+                        value="{{ old('contact_person', $supplier->contact_person) }}"
+                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('contact_person') border-red-500 @enderror"
+                        placeholder="Masukkan nama kontak person">
+                    @error('contact_person')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
@@ -26,8 +39,8 @@
                 <div class="mb-6">
                     <label for="address" class="mb-2 block text-sm font-medium text-gray-900">Alamat</label>
                     <textarea id="address" name="address" rows="3"
-                              class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('address') border-red-500 @enderror"
-                              placeholder="Masukkan alamat lengkap">{{ old('address', $supplier->address) }}</textarea>
+                        class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('address') border-red-500 @enderror"
+                        placeholder="Masukkan alamat lengkap">{{ old('address', $supplier->address) }}</textarea>
                     @error('address')
                         <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -37,8 +50,8 @@
                     <div>
                         <label for="phone" class="mb-2 block text-sm font-medium text-gray-900">Telepon</label>
                         <input type="text" id="phone" name="phone" value="{{ old('phone', $supplier->phone) }}"
-                               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('phone') border-red-500 @enderror"
-                               placeholder="08123456789">
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('phone') border-red-500 @enderror"
+                            placeholder="08123456789">
                         @error('phone')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -47,8 +60,8 @@
                     <div>
                         <label for="email" class="mb-2 block text-sm font-medium text-gray-900">Email</label>
                         <input type="email" id="email" name="email" value="{{ old('email', $supplier->email) }}"
-                               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('email') border-red-500 @enderror"
-                               placeholder="supplier@example.com">
+                            class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 @error('email') border-red-500 @enderror"
+                            placeholder="supplier@example.com">
                         @error('email')
                             <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
@@ -57,11 +70,11 @@
 
                 <div class="flex space-x-3">
                     <button type="submit"
-                            class="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        class="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
                         Update
                     </button>
                     <a href="{{ route('suppliers.index') }}"
-                       class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200">
+                        class="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200">
                         Kembali
                     </a>
                 </div>

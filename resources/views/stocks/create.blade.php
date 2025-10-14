@@ -18,6 +18,18 @@
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
+                <div class="mb-4">
+                    <label for="supplier_id" class="block text-gray-700 font-medium mb-2">Pilih Supplier (opsional)</label>
+                    <select name="supplier_id" id="supplier_id" class="w-full border-gray-300 rounded-lg shadow-sm p-2">
+                        <option value="">-- Pilih Supplier --   </option>
+                        @foreach ($suppliers as $supplier)
+                            <option value="{{ $supplier->id }}">{{ $supplier->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('supplier_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
 
                 <div class="mb-4">
                     <label for="quantity" class="block text-gray-700 font-medium mb-2">Jumlah</label>
@@ -45,11 +57,9 @@
                     <input type="date" name="date" required
                         class="w-full border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                 </div>
-
-
                 <div class="mb-6">
-                    <label for="description" class="block text-gray-700 font-medium mb-2">Keterangan</label>
-                    <textarea name="description" id="description" rows="3" class="w-full border-gray-300 rounded-lg shadow-sm p-2"></textarea>
+                    <label for="notes" class="block text-gray-700 font-medium mb-2">Keterangan</label>
+                    <textarea name="notes" id="notes" rows="3" class="w-full border-gray-300 rounded-lg shadow-sm p-2"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3">

@@ -18,9 +18,9 @@ class ProductController extends Controller
         $categoryId = $r->query('category');
 
         $products = Product::with('category')
-            ->when($q, fn($qb) => $qb->where(function($q2) use ($q) {
-                $q2->where('name', 'like', '%'.$q.'%')
-                   ->orWhere('sku', 'like', '%'.$q.'%');
+            ->when($q, fn($qb) => $qb->where(function ($q2) use ($q) {
+                $q2->where('name', 'like', '%' . $q . '%')
+                    ->orWhere('sku', 'like', '%' . $q . '%');
             }))
             ->when($categoryId, fn($qb) => $qb->where('category_id', $categoryId))
             ->paginate(15);
@@ -69,7 +69,7 @@ class ProductController extends Controller
 
         $data = $request->validate([
             'name' => 'required|string',
-            'sku' => ['nullable','string', Rule::unique('products','sku')],
+            'sku' => ['nullable', 'string', Rule::unique('products', 'sku')],
             'category_id' => 'nullable|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
             'price' => 'nullable|numeric',
@@ -105,18 +105,21 @@ class ProductController extends Controller
         }
     }
 
-    public function edit(Product $product){ return view('products.edit', compact('product')); }
+    public function edit(Product $product)
+    {
+        return view('products.edit', compact('product'));
+    }
 
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
-            'name'=>'required|string',
-            'sku'=>['nullable','string', Rule::unique('products','sku')->ignore($product->id)],
-            'category_id'=>'nullable|exists:categories,id',
-            'supplier_id'=>'nullable|exists:suppliers,id',
-            'price'=>'nullable|numeric',
-            'stock'=>'nullable|integer',
-            'description'=>'nullable|string'
+            'name' => 'required|string',
+            'sku' => ['nullable', 'string', Rule::unique('products', 'sku')->ignore($product->id)],
+            'category_id' => 'nullable|exists:categories,id',
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'price' => 'nullable|numeric',
+            'stock' => 'nullable|integer',
+            'notes' => 'nullable|string'
         ]);
 
         // filter kolom sesuai schema
@@ -133,13 +136,17 @@ class ProductController extends Controller
         }
     }
 
-    public function destroy(Product $product){ $product->delete(); return back()->with('success','Produk dihapus.'); }
+    public function destroy(Product $product)
+    {
+        $product->delete();
+        return back()->with('success', 'Produk dihapus.');
+    }
 
     public function import(Request $r)
     {
         // terima file CSV, parse dan buat produk
         // implement sesuai kebutuhan (contoh: use maatwebsite/excel)
-        return back()->with('success','Import diproses.');
+        return back()->with('success', 'Import diproses.');
     }
 
     public function export()

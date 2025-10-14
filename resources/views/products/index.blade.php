@@ -3,8 +3,24 @@
         <div class="flex items-center justify-between mb-4">
             <h1 class="text-2xl font-semibold">Manajemen Produk</h1>
             <div class="flex items-center space-x-2">
+                <!-- Add Category Button - Admin Only -->
+                @if (auth()->check() && auth()->user()->isAdmin())
+                    <button data-modal-target="categoryModal" data-modal-toggle="categoryModal"
+                        class="px-3 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Tambah Kategori
+                    </button>
+                @endif
+
                 <a href="{{ route('products.create') }}"
-                    class="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700">Tambah Produk</a>
+                    class="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Tambah Produk
+                </a>
                 <a href="{{ route('products.export') }}"
                     class="px-3 py-2 border rounded-md text-sm hover:bg-gray-100">Export CSV</a>
                 <button data-modal-target="importModal" data-modal-toggle="importModal"
@@ -21,6 +37,12 @@
         @if (session('general'))
             <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
                 {{ session('general') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
+                {{ session('error') }}
             </div>
         @endif
 
@@ -90,17 +112,83 @@
         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
             <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
-                <button type="button" class="absolute top-3 right-2.5 text-gray-400"
-                    data-modal-toggle="importModal">×</button>
+                <button type="button"
+                    class="absolute top-3 right-2.5 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    data-modal-toggle="importModal">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
                 <div class="p-6">
                     <h3 class="mb-4 text-lg font-medium">Import Produk (CSV)</h3>
                     <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <input type="file" name="file" accept=".csv" required class="mb-4">
+                        <input type="file" name="file" accept=".csv" required
+                            class="mb-4 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
                         <div class="flex justify-end gap-2">
                             <button type="button" data-modal-toggle="importModal"
-                                class="px-4 py-2 border rounded">Batal</button>
-                            <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Import</button>
+                                class="px-4 py-2 border rounded hover:bg-gray-100">Batal</button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Import</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Category Modal (Admin Only) -->
+    <div id="categoryModal" tabindex="-1"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
+        <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
+            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
+                <button type="button"
+                    class="absolute top-3 right-2.5 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    data-modal-toggle="categoryModal">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div class="p-6">
+                    <h3 class="mb-4 text-lg font-medium flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                        Tambah Kategori Baru
+                    </h3>
+                    <form action="{{ route('categories.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="category_name" class="block text-sm font-medium text-gray-700 mb-2">Nama
+                                Kategori</label>
+                            <input type="text" name="name" id="category_name" required
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="Contoh: Elektronik">
+                        </div>
+                        <div class="mb-4">
+                            <label for="category_description"
+                                class="block text-sm font-medium text-gray-700 mb-2">Deskripsi (Opsional)</label>
+                            <textarea name="description" id="category_description" rows="3"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                placeholder="Deskripsi kategori..."></textarea>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button type="button" data-modal-toggle="categoryModal"
+                                class="px-4 py-2 border rounded hover:bg-gray-100">Batal</button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg>
+                                Simpan
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -110,7 +198,7 @@
 
     @push('scripts')
         <script>
-            // nothing required here; Flowbite handles modal via data attributes
+            // Flowbite handles modals via data attributes
         </script>
     @endpush
 </x-layout>

@@ -22,6 +22,7 @@ class SupplierController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'contact_person' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -42,6 +43,7 @@ class SupplierController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'contact_person' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',

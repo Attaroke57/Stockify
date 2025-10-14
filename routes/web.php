@@ -9,7 +9,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\CategoryController;
 // Welcome/Landing page
 Route::get('/', function () {
     return view('welcome');
@@ -66,4 +66,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    //Admin only routes
+    Route::middleware(['role:admin'])->group(function () {
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        // Route::resource('categories', CategoryController::class); // atau gunakan resource jika butuh CRUD lengkap
+    });
 });

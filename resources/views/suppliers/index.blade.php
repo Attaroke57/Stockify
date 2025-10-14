@@ -28,6 +28,7 @@
                     <tr>
                         <th scope="col" class="px-6 py-3">No</th>
                         <th scope="col" class="px-6 py-3">Nama Supplier</th>
+                        <th scope="col" class="px-6 py-3">Kontak Person</th>
                         <th scope="col" class="px-6 py-3">Alamat</th>
                         <th scope="col" class="px-6 py-3">Telepon</th>
                         <th scope="col" class="px-6 py-3">Email</th>
@@ -39,6 +40,7 @@
                     <tr class="border-b bg-white hover:bg-gray-50">
                         <td class="px-6 py-4">{{ $suppliers->firstItem() + $key }}</td>
                         <td class="px-6 py-4 font-medium text-gray-900">{{ $supplier->name }}</td>
+                        <td class="px-6 py-4">{{ $supplier->contact_person ?? '-' }}</td>
                         <td class="px-6 py-4">{{ $supplier->address ?? '-' }}</td>
                         <td class="px-6 py-4">{{ $supplier->phone ?? '-' }}</td>
                         <td class="px-6 py-4">{{ $supplier->email ?? '-' }}</td>
