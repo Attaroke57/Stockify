@@ -85,33 +85,28 @@ class DashboardController extends Controller
     // Endpoint AJAX untuk Chart
     public function getChartData($period = 'minggu')
     {
-        $now = Carbon::today();
+        $now = Carbon::now();
 
         if ($period === 'hari') {
             // Data per jam untuk hari ini
             $start = $now->copy()->startOfDay();
             $end = $now->copy()->endOfDay();
-            $groupFormat = 'Y-m-d H';
             $dateFormat = '%Y-%m-%d %H';
         } elseif ($period === 'minggu') {
-            $start = $now->copy()->subDays(6);
-            $end = $now;
-            $groupFormat = 'Y-m-d';
+            $start = $now->copy()->subDays(6)->startOfDay();
+            $end = $now->copy()->endOfDay();
             $dateFormat = '%Y-%m-%d';
         } elseif ($period === 'bulan') {
             $start = $now->copy()->startOfMonth();
-            $end = $now;
-            $groupFormat = 'Y-m-d';
+            $end = $now->copy()->endOfDay();
             $dateFormat = '%Y-%m-%d';
         } elseif ($period === 'tahun') {
             $start = $now->copy()->startOfYear();
-            $end = $now;
-            $groupFormat = 'Y-m';
+            $end = $now->copy()->endOfMonth();
             $dateFormat = '%Y-%m';
         } else {
-            $start = $now->copy()->subDays(6);
-            $end = $now;
-            $groupFormat = 'Y-m-d';
+            $start = $now->copy()->subDays(6)->startOfDay();
+            $end = $now->copy()->endOfDay();
             $dateFormat = '%Y-%m-%d';
         }
 
@@ -120,45 +115,53 @@ class DashboardController extends Controller
             ->where('type', 'in')
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('grup')
-            ->pluck('total', 'grup');
+            ->pluck('total', 'grup')
+            ->toArray();
 
         // Ambil data barang KELUAR
         $stokKeluar = StockTransaction::selectRaw("DATE_FORMAT(created_at, '{$dateFormat}') as grup, SUM(quantity) as total")
             ->where('type', 'out')
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('grup')
-            ->pluck('total', 'grup');
+            ->pluck('total', 'grup')
+            ->toArray();
 
         $labels = [];
         $incoming = [];
         $outgoing = [];
 
         if ($period === 'hari') {
-            // Per jam untuk hari ini
+            // Per jam untuk hari ini (00:00 - 23:00)
             for ($hour = 0; $hour < 24; $hour++) {
                 $labels[] = sprintf('%02d:00', $hour);
-                $key = $start->copy()->hour($hour)->format('Y-m-d H');
-                $incoming[] = $stokMasuk[$key] ?? 0;
-                $outgoing[] = $stokKeluar[$key] ?? 0;
+                $key = $start->copy()->addHours($hour)->format('Y-m-d H');
+                $incoming[] = isset($stokMasuk[$key]) ? (int)$stokMasuk[$key] : 0;
+                $outgoing[] = isset($stokKeluar[$key]) ? (int)$stokKeluar[$key] : 0;
             }
-        } elseif ($groupFormat === 'Y-m-d') {
-            foreach (CarbonPeriod::create($start, $end) as $date) {
-                if ($period === 'bulan') {
-                    $labels[] = $date->translatedFormat('d M');
-                } else {
-                    $labels[] = $date->translatedFormat('l');
-                }
-                $key = $date->format('Y-m-d');
-                $incoming[] = $stokMasuk[$key] ?? 0;
-                $outgoing[] = $stokKeluar[$key] ?? 0;
+        } elseif ($period === 'tahun') {
+            // Per bulan untuk tahun ini (Januari - sekarang)
+            $currentMonth = $now->month;
+            for ($month = 1; $month <= $currentMonth; $month++) {
+                $date = Carbon::create($now->year, $month, 1);
+                $labels[] = $date->format('M'); // Jan, Feb, Mar, ...
+                $key = $date->format('Y-m');
+                $incoming[] = isset($stokMasuk[$key]) ? (int)$stokMasuk[$key] : 0;
+                $outgoing[] = isset($stokKeluar[$key]) ? (int)$stokKeluar[$key] : 0;
             }
         } else {
-            // Per bulan untuk tahun ini
-            for ($month = $start->month; $month <= $end->month; $month++) {
-                $labels[] = Carbon::create()->month($month)->translatedFormat('F');
-                $key = $start->copy()->month($month)->format('Y-m');
-                $incoming[] = $stokMasuk[$key] ?? 0;
-                $outgoing[] = $stokKeluar[$key] ?? 0;
+            // Per hari untuk minggu/bulan ini
+            $period_obj = CarbonPeriod::create($start, $end);
+            foreach ($period_obj as $date) {
+                if ($period === 'bulan') {
+                    $labels[] = $date->format('d M'); // 01 Oct, 02 Oct, ...
+                } else {
+                    // Untuk minggu ini, tampilkan nama hari
+                    $dayNames = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+                    $labels[] = $dayNames[$date->dayOfWeek];
+                }
+                $key = $date->format('Y-m-d');
+                $incoming[] = isset($stokMasuk[$key]) ? (int)$stokMasuk[$key] : 0;
+                $outgoing[] = isset($stokKeluar[$key]) ? (int)$stokKeluar[$key] : 0;
             }
         }
 
