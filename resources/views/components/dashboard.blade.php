@@ -1,14 +1,14 @@
 <x-layout title="Dashboard">
 <div class="container mx-auto p-4">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Dashboard</h1>
-        <div class="flex items-center space-x-2">
-            <label for="period" class="text-sm text-gray-600 dark:text-gray-300">Periode</label>
-            <select id="period" class="block w-40 py-1 px-2 bg-white border rounded-md text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-white">
-                <option value="7">7 hari</option>
-                <option value="30" selected>30 hari</option>
-                <option value="90">90 hari</option>
+       <div class="flex flex-wrap items-center justify-between mb-6">
+        <h1 class="text-2xl font-semibold text-gray-800 dark:text-white">Dashboard</h1>
+        <div>
+            <select id="periodSelect" class="border border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2">
+                <option value="hari">Hari ini</option>
+                <option value="minggu" selected>Minggu ini</option>
+                <option value="bulan">Bulan ini</option>
+                <option value="tahun">Tahun ini</option>
             </select>
         </div>
     </div>
@@ -77,92 +77,94 @@
     </div>
 
     <!-- Main content: chart + recent activity -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white border rounded-lg p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Grafik Stok Barang</h2>
-                <div class="text-sm text-gray-500 dark:text-gray-400">Periode terakhir</div>
-            </div>
-            <canvas id="stockChart" height="120"></canvas>
-        </div>
 
-        <div class="bg-white border rounded-lg p-4 shadow-sm dark:bg-gray-800 dark:border-gray-700">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-white">Aktivitas Terbaru</h2>
-                @if(Route::has('activities.index'))
-                <a href="{{ route('activities.index') }}" class="text-sm text-indigo-600 hover:underline">Lihat semua</a>
-                @endif
-            </div>
-
-            <ul class="space-y-3">
-                @forelse($recentActivities ?? [] as $act)
-                <li class="flex items-start space-x-3 dark:space-x-reverse rtl:space-x-reverse">
-                    <img class="w-10 h-10 rounded-full" src="{{ $act['avatar'] ?? 'https://ui-avatars.com/api/?name=' . urlencode($act['user'] ?? 'User') }}" alt="avatar">
-                    <div class="flex-1">
-                        <div class="text-sm text-gray-700 dark:text-gray-200">
-                            <span class="font-semibold">{{ $act['user'] ?? 'User' }}</span>
-                            <span class="text-gray-500 dark:text-gray-400"> — {{ $act['action'] ?? 'melakukan aksi' }}</span>
-                        </div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ $act['time'] ?? 'baru saja' }}</div>
-                    </div>
-                </li>
-                @empty
-                <li class="text-sm text-gray-500 dark:text-gray-400">Belum ada aktivitas terbaru.</li>
-                @endforelse
-            </ul>
+    <!-- Grafik -->
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Grafik Transaksi Barang</h2>
+        <div class="h-80">
+            <canvas id="stockChart"></canvas>
         </div>
+    </div>
+
+    <!-- Aktivitas Terbaru -->
+    <div class="bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">Aktivitas Terbaru</h2>
+        <p class="text-sm text-gray-500">Belum ada aktivitas terbaru.</p>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
-    const ctx = document.getElementById('stockChart').getContext('2d');
+    const ctx = document.getElementById("stockChart").getContext("2d");
+    const periodSelect = document.getElementById("periodSelect");
 
-    // Ambil data dari endpoint
-    const response = await fetch('/dashboard/data');
-    const data = await response.json();
+    async function fetchData(period = "minggu") {
+        try {
+            const response = await fetch(`/dashboard/data/${period}`);
+            const data = await response.json();
 
-    console.log("Data chart:", data); // debug biar keliatan di console
-
-    if (!data || !data.labels || !data.values) {
-        console.error("Data chart tidak valid", data);
-        return;
+            return {
+                labels: data.labels || [],
+                incoming: data.incoming || [],
+                outgoing: data.outgoing || [],
+            };
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            return { labels: [], incoming: [], outgoing: [] };
+        }
     }
 
-    // Buat chart
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: data.labels,
-            datasets: [{
-                label: 'Total Stok Barang',
-                data: data.values,
-                borderColor: '#6366F1',
-                backgroundColor: 'rgba(99, 102, 241, 0.2)',
-                fill: true,
-                tension: 0.4,
-                borderWidth: 2,
-                pointRadius: 3,
-                pointBackgroundColor: '#6366F1'
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+    let chart;
+    async function renderChart(period = "minggu") {
+        const { labels, incoming, outgoing } = await fetchData(period);
+
+        if (chart) chart.destroy();
+
+        chart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: "Barang Masuk",
+                        data: incoming,
+                        backgroundColor: "rgba(37, 99, 235, 0.7)",
+                        borderRadius: 6,
+                    },
+                    {
+                        label: "Barang Keluar",
+                        data: outgoing,
+                        backgroundColor: "rgba(239, 68, 68, 0.7)",
+                        borderRadius: 6,
+                    },
+                ],
             },
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { grid: { display: false } },
+                    y: { beginAtZero: true },
+                },
+                plugins: {
+                    legend: {
+                        position: "bottom",
+                        labels: { usePointStyle: true },
+                    },
+                },
+            },
+        });
+    }
+
+    await renderChart();
+
+    periodSelect.addEventListener("change", (e) => {
+        renderChart(e.target.value);
     });
 });
 </script>
+
 
 
 </x-layout>
