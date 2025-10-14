@@ -5,11 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\StockTransaction;
-use App\Models\Product;
-use App\Models\StockTransaction;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Carbon\CarbonPeriod;
 
 class DashboardController extends Controller
