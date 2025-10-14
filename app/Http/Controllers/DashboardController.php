@@ -16,23 +16,7 @@ class DashboardController extends Controller
         // Default: range 'minggu'
         $range = $request->get('range', 'minggu');
         $now = Carbon::today();
-        // Default: range 'minggu'
-        $range = $request->get('range', 'minggu');
-        $now = Carbon::today();
 
-        // Tentukan periode waktu berdasarkan pilihan
-        if ($range === 'minggu') {
-            $start = $now->copy()->subDays(6);
-            $end = $now;
-            $groupFormat = 'Y-m-d';
-        } elseif ($range === 'bulan') {
-            $start = $now->copy()->startOfMonth();
-            $end = $now;
-            $groupFormat = 'Y-m-d';
-        } elseif ($range === 'tahun') {
-            $start = $now->copy()->startOfYear();
-            $end = $now;
-            $groupFormat = 'Y-m';
         // Tentukan periode waktu berdasarkan pilihan
         if ($range === 'minggu') {
             $start = $now->copy()->subDays(6);
@@ -50,22 +34,8 @@ class DashboardController extends Controller
             $start = $now->copy()->subDays(6);
             $end = $now;
             $groupFormat = 'Y-m-d';
-            $start = $now->copy()->subDays(6);
-            $end = $now;
-            $groupFormat = 'Y-m-d';
         }
 
-        // Format untuk MySQL
-        $dateFormat = $groupFormat === 'Y-m' ? '%Y-%m' : '%Y-%m-%d';
-
-        // Ambil total barang masuk per tanggal
-        $stokMasuk = StockTransaction::selectRaw("DATE_FORMAT(created_at, '{$dateFormat}') as grup, SUM(quantity) as total")
-            ->where('type', 'in')
-            ->whereBetween('created_at', [$start, $end])
-            ->groupBy('grup')
-            ->pluck('total', 'grup');
-
-        // Siapkan label dan value untuk chart
         // Format untuk MySQL
         $dateFormat = $groupFormat === 'Y-m' ? '%Y-%m' : '%Y-%m-%d';
 
@@ -80,26 +50,6 @@ class DashboardController extends Controller
         $labels = [];
         $values = [];
 
-        if ($groupFormat === 'Y-m-d') {
-            foreach (CarbonPeriod::create($start, $end) as $date) {
-                $labels[] = $range === 'bulan'
-                    ? $date->translatedFormat('d M')
-                    : $date->translatedFormat('l');
-                $values[] = $stokMasuk[$date->format('Y-m-d')] ?? 0;
-            }
-        } else {
-            for ($month = $start->month; $month <= $end->month; $month++) {
-                $labels[] = Carbon::create()->month($month)->translatedFormat('F');
-                $key = $start->copy()->month($month)->format('Y-m');
-                $values[] = $stokMasuk[$key] ?? 0;
-            }
-        }
-
-        // Hitung total data lainnya
-        $productCount = Product::count();
-        $incomingCount = StockTransaction::where('type', 'in')->count();
-        $outgoingCount = StockTransaction::where('type', 'out')->count();
-        $totalStock = Product::sum('stock');
         if ($groupFormat === 'Y-m-d') {
             foreach (CarbonPeriod::create($start, $end) as $date) {
                 $labels[] = $range === 'bulan'
@@ -215,12 +165,6 @@ class DashboardController extends Controller
             }
         }
 
-        return response()->json([
-            'labels' => $labels,
-            'incoming' => $incoming,
-            'outgoing' => $outgoing,
-        ]);
-    }
         return response()->json([
             'labels' => $labels,
             'incoming' => $incoming,
