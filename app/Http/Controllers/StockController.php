@@ -27,12 +27,9 @@ class StockController extends Controller
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'type' => 'required|in:in,out',
-            'description' => 'nullable|string|max:255',
+            'notes' => 'nullable|string|max:255',
             'date' => 'required|date',
-
         ]);
-
-        $validated['date'] = $request->input('date') ?: now()->format('mm-dd-yyyy');
 
         StockTransaction::create($validated);
 

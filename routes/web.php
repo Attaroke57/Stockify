@@ -7,6 +7,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
 // Welcome/Landing page
@@ -63,7 +64,6 @@ Route::middleware(['auth'])->group(function () {
 
     // Profile & Settings - Semua role
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-    Route::get('/settings', function () {
-        return view('settings');
-    })->name('settings');
+    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
+    Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
 });

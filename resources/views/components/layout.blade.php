@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>{{ $title ?? 'Stockify - Aplikasi Manajemen Stok' }}</title>
+    <title>{{ $title ?? \App\Models\Setting::get('app_name', 'Stockify') . ' - Aplikasi Manajemen Stok' }}</title>
 
     {{-- Tailwind CSS --}}
     @vite('resources/css/app.css')

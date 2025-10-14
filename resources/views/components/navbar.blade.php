@@ -6,7 +6,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
-            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Stockify</span>
+            <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">{{ \App\Models\Setting::get('app_name', 'Stockify') }}</span>
         </a>
 
         <!-- Right side buttons -->
@@ -108,7 +108,7 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Profil</a>
                     </li>
                     <li>
-                        <a href="{{ route('settings') }}"
+                        <a href="{{ route('settings.index') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Pengaturan</a>
                     </li>
                     <li>
