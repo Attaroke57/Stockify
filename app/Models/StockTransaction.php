@@ -14,6 +14,7 @@ class StockTransaction extends Model
         'product_id',
         'quantity',
         'type',
+        'date',
         'notes',
     ];
 
