@@ -28,7 +28,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Dashboard - Semua role bisa akses
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/data', [DashboardController::class, 'getChartData'])->name('dashboard.data');
+    // Di routes/web.php
+    Route::get('/dashboard/data/{period}', [DashboardController::class, 'getChartData'])->name('dashboard.data');
 
     // Stock - Semua role bisa akses (admin, manager, staff)
     Route::resource('stocks', StockController::class);
