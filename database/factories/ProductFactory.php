@@ -97,7 +97,7 @@ class ProductFactory extends Factory
             'sku' => $sku,
             'category_id' => Category::inRandomOrder()->first()?->id ?? Category::factory(),
             'supplier_id' => Supplier::inRandomOrder()->first()?->id ?? Supplier::factory(),
-            'price' => $this->faker->randomFloat(2, 10000, 5000000), // Rp 10.000 - Rp 5.000.000
+            'selling_price' => $this->faker->randomFloat(2, 10000, 5000000), // Rp 10.000 - Rp 5.000.000
             'stock' => $this->faker->numberBetween(0, 500),
             'description' => $this->faker->paragraph(2),
             'image' => null, // atau bisa generate dummy image URL
