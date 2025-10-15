@@ -1,204 +1,389 @@
 <x-layout title="Produk">
-    <div class="container mx-auto p-4">
-        <div class="flex items-center justify-between mb-4">
-            <h1 class="text-2xl font-semibold">Manajemen Produk</h1>
-            <div class="flex items-center space-x-2">
-                <!-- Add Category Button - Admin Only -->
-                @if (auth()->check() && auth()->user()->isAdmin())
-                    <button data-modal-target="categoryModal" data-modal-toggle="categoryModal"
-                        class="px-3 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 flex items-center">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Tambah Kategori
-                    </button>
-                @endif
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-                <a href="{{ route('products.create') }}"
-                    class="px-3 py-2 bg-indigo-600 text-white rounded-md text-sm hover:bg-indigo-700 flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    .glass-button {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .glass-button:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .gradient-text {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.6s ease-in;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .table-row {
+        transition: all 0.2s ease;
+    }
+
+    .table-row:hover {
+        background: rgba(99, 102, 241, 0.05);
+        transform: scale(1.01);
+    }
+
+    .action-button {
+        transition: all 0.2s ease;
+    }
+
+    .action-button:hover {
+        transform: scale(1.1);
+    }
+
+    .modal-backdrop {
+        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .search-input:focus {
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+</style>
+
+<div class="container mx-auto p-4 md:p-8">
+    <!-- Header -->
+    <div class="flex flex-wrap items-center justify-between mb-8 fade-in">
+        <div>
+            <h1 class="text-4xl font-bold text-white mb-2">Manajemen Produk</h1>
+            <p class="text-purple-100">Kelola semua produk inventory Anda 📦</p>
+        </div>
+        <div class="flex items-center space-x-3 mt-4 sm:mt-0">
+            @if (auth()->check() && auth()->user()->isAdmin())
+                <button data-modal-target="categoryModal" data-modal-toggle="categoryModal"
+                    class="glass-button px-4 py-3 rounded-xl text-sm font-semibold text-green-700 border border-green-200 shadow-lg flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
-                    Tambah Produk
-                </a>
-                <a href="{{ route('products.export') }}"
-                    class="px-3 py-2 border rounded-md text-sm hover:bg-gray-100">Export CSV</a>
-                <button data-modal-target="importModal" data-modal-toggle="importModal"
-                    class="px-3 py-2 border rounded-md text-sm">Import CSV</button>
+                    Kategori
+                </button>
+            @endif
+
+            <a href="{{ route('products.create') }}"
+                class="px-4 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Tambah Produk
+            </a>
+
+            <a href="{{ route('products.export') }}"
+                class="glass-button px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-gray-200 shadow-lg flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
+                </svg>
+                Export
+            </a>
+
+            <button data-modal-target="importModal" data-modal-toggle="importModal"
+                class="glass-button px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-gray-200 shadow-lg flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                </svg>
+                Import
+            </button>
+        </div>
+    </div>
+
+    <!-- Alerts -->
+    @if (session('success'))
+        <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 rounded-xl shadow-lg fade-in">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-green-800 font-semibold">{{ session('success') }}</p>
             </div>
         </div>
+    @endif
 
-        @if (session('success'))
-            <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded">
-                {{ session('success') }}
+    @if (session('general'))
+        <div class="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-xl shadow-lg fade-in">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <p class="text-yellow-800 font-semibold">{{ session('general') }}</p>
             </div>
-        @endif
+        </div>
+    @endif
 
-        @if (session('general'))
-            <div class="mb-4 p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded">
-                {{ session('general') }}
+    @if (session('error'))
+        <div class="mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 rounded-xl shadow-lg fade-in">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <p class="text-red-800 font-semibold">{{ session('error') }}</p>
             </div>
-        @endif
+        </div>
+    @endif
 
-        @if (session('error'))
-            <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-800 rounded">
-                {{ session('error') }}
-            </div>
-        @endif
+    <!-- Search & Filter -->
+    <form method="GET" class="mb-6 fade-in">
+        <div class="glass-card rounded-2xl shadow-xl p-4">
+            <div class="flex flex-wrap gap-3">
+                <input name="q" value="{{ request('q') }}"
+                    class="search-input flex-1 border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-700 font-medium focus:border-indigo-400 focus:outline-none transition-all"
+                    placeholder="🔍 Cari nama produk atau SKU...">
 
-        <form method="GET" class="mb-4">
-            <div class="flex gap-2">
-                <input name="q" value="{{ request('q') }}" class="flex-1 border rounded px-3 py-2"
-                    placeholder="Cari nama / SKU...">
-                <select name="category" class="border rounded px-2 py-2">
-                    <option value="">Semua kategori</option>
+                <select name="category"
+                    class="border-2 border-gray-200 rounded-xl px-4 py-3 text-gray-700 font-medium focus:border-indigo-400 focus:outline-none transition-all">
+                    <option value="">📂 Semua Kategori</option>
                     @foreach ($categories ?? \App\Models\Category::orderBy('name')->get() as $cat)
                         <option value="{{ $cat->id }}" @selected(request('category') == $cat->id)>{{ $cat->name }}</option>
                     @endforeach
                 </select>
-                <button class="px-4 py-2 bg-indigo-600 text-white rounded">Cari</button>
-            </div>
-        </form>
 
-        <div class="overflow-x-auto bg-white rounded-lg shadow">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-2 text-left text-sm">#</th>
-                        <th class="px-4 py-2 text-left text-sm">Nama</th>
-                        <th class="px-4 py-2 text-left text-sm">SKU</th>
-                        <th class="px-4 py-2 text-left text-sm">Kategori</th>
-                        <th class="px-4 py-2 text-right text-sm">Stok</th>
-                        <th class="px-4 py-2 text-right text-sm">Harga</th>
-                        <th class="px-4 py-2 text-center text-sm">Aksi</th>
+                <button class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                    Cari
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Products Table -->
+    <div class="glass-card rounded-2xl shadow-2xl overflow-hidden fade-in">
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead>
+                    <tr class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                        <th class="px-6 py-4 text-left text-sm font-bold">#</th>
+                        <th class="px-6 py-4 text-left text-sm font-bold">Nama Produk</th>
+                        <th class="px-6 py-4 text-left text-sm font-bold">SKU</th>
+                        <th class="px-6 py-4 text-left text-sm font-bold">Kategori</th>
+                        <th class="px-6 py-4 text-right text-sm font-bold">Stok</th>
+                        <th class="px-6 py-4 text-right text-sm font-bold">Harga</th>
+                        <th class="px-6 py-4 text-center text-sm font-bold">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse($products as $product)
-                        <tr>
-                            <td class="px-4 py-3">
-                                {{ $loop->iteration + ($products->currentPage() - 1) * $products->perPage() }}</td>
-                            <td class="px-4 py-3">{{ $product->name }}</td>
-                            <td class="px-4 py-3">{{ $product->sku }}</td>
-                            <td class="px-4 py-3">{{ $product->category->name ?? '-' }}</td>
-                            <td class="px-4 py-3 text-right">{{ $product->stock ?? 0 }}</td>
-                            <td class="px-4 py-3 text-right">Rp
-                                {{ number_format($product->selling_price ?? 0, 2, ',', '.') }}</td>
-                            <td class="px-4 py-3 text-center">
-                                <a href="{{ route('products.edit', $product) }}"
-                                    class="text-indigo-600 hover:underline mr-2">Edit</a>
-                                <form action="{{ route('products.destroy', $product) }}" method="POST"
-                                    class="inline-block" onsubmit="return confirm('Hapus produk?')">
-                                    @csrf @method('DELETE')
-                                    <button class="text-red-600 hover:underline">Hapus</button>
-                                </form>
+                        <tr class="table-row">
+                            <td class="px-6 py-4 text-gray-600 font-semibold">
+                                {{ $loop->iteration + ($products->currentPage() - 1) * $products->perPage() }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold mr-3">
+                                        {{ substr($product->name, 0, 1) }}
+                                    </div>
+                                    <span class="font-semibold text-gray-800">{{ $product->name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-sm font-semibold">
+                                    {{ $product->sku }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm font-semibold">
+                                    {{ $product->category->name ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <span class="px-3 py-1 {{ $product->stock > 10 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }} rounded-lg text-sm font-bold">
+                                    {{ $product->stock ?? 0 }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-bold text-gray-800">
+                                Rp {{ number_format($product->selling_price ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <a href="{{ route('products.edit', $product) }}"
+                                        class="action-button px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Edit
+                                    </a>
+                                    <form action="{{ route('products.destroy', $product) }}" method="POST"
+                                        class="inline-block" onsubmit="return confirm('⚠️ Yakin ingin menghapus produk ini?')">
+                                        @csrf @method('DELETE')
+                                        <button class="action-button px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 inline-flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-6 text-center text-gray-500">Tidak ada produk.</td>
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mb-4">
+                                        <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-gray-500 font-semibold text-lg">Tidak ada produk ditemukan</p>
+                                    <p class="text-gray-400 text-sm mt-1">Coba ubah filter atau tambah produk baru</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="mt-4">
-            {{ $products->withQueryString()->links() }}
-        </div>
     </div>
 
-    <!-- Import Modal (Flowbite) -->
-    <div id="importModal" tabindex="-1"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
-        <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
-                <button type="button"
-                    class="absolute top-3 right-2.5 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                    data-modal-toggle="importModal">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div class="p-6">
-                    <h3 class="mb-4 text-lg font-medium">Import Produk (CSV)</h3>
-                    <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <input type="file" name="file" accept=".csv" required
-                            class="mb-4 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none">
-                        <div class="flex justify-end gap-2">
-                            <button type="button" data-modal-toggle="importModal"
-                                class="px-4 py-2 border rounded hover:bg-gray-100">Batal</button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Import</button>
-                        </div>
-                    </form>
+    <!-- Pagination -->
+    <div class="mt-6">
+        {{ $products->withQueryString()->links() }}
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div id="importModal" tabindex="-1"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full modal-backdrop">
+    <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
+        <div class="relative glass-card rounded-3xl shadow-2xl">
+            <button type="button"
+                class="absolute top-4 right-4 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-xl p-2 transition-all"
+                data-modal-toggle="importModal">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div class="p-8">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold gradient-text">Import Produk CSV</h3>
                 </div>
+                <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="mb-6">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih File CSV</label>
+                        <input type="file" name="file" accept=".csv" required
+                            class="block w-full text-sm text-gray-700 border-2 border-gray-200 rounded-xl cursor-pointer bg-gray-50 focus:outline-none hover:border-indigo-400 transition-all file:mr-4 file:py-3 file:px-4 file:rounded-l-xl file:border-0 file:bg-gradient-to-r file:from-indigo-600 file:to-purple-600 file:text-white file:font-semibold">
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" data-modal-toggle="importModal"
+                            class="px-6 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                            Import Sekarang
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Add Category Modal (Admin Only) -->
-    <div id="categoryModal" tabindex="-1"
-        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full">
-        <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
-            <div class="relative bg-white rounded-lg shadow dark:bg-gray-800">
-                <button type="button"
-                    class="absolute top-3 right-2.5 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                    data-modal-toggle="categoryModal">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <div class="p-6">
-                    <h3 class="mb-4 text-lg font-medium flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
+<!-- Add Category Modal -->
+<div id="categoryModal" tabindex="-1"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full modal-backdrop">
+    <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
+        <div class="relative glass-card rounded-3xl shadow-2xl">
+            <button type="button"
+                class="absolute top-4 right-4 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-xl p-2 transition-all"
+                data-modal-toggle="categoryModal">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg>
+            </button>
+            <div class="p-8">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-4">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
-                        Tambah Kategori Baru
-                    </h3>
-                    <form action="{{ route('categories.store') }}" method="POST">
-                        @csrf
-                        <div class="mb-4">
-                            <label for="category_name" class="block text-sm font-medium text-gray-700 mb-2">Nama
-                                Kategori</label>
-                            <input type="text" name="name" id="category_name" required
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="Contoh: Elektronik">
-                        </div>
-                        <div class="mb-4">
-                            <label for="category_description"
-                                class="block text-sm font-medium text-gray-700 mb-2">Deskripsi (Opsional)</label>
-                            <textarea name="description" id="category_description" rows="3"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                                placeholder="Deskripsi kategori..."></textarea>
-                        </div>
-                        <div class="flex justify-end gap-2">
-                            <button type="button" data-modal-toggle="categoryModal"
-                                class="px-4 py-2 border rounded hover:bg-gray-100">Batal</button>
-                            <button type="submit"
-                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg>
-                                Simpan
-                            </button>
-                        </div>
-                    </form>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800">Tambah Kategori</h3>
                 </div>
+                <form action="{{ route('categories.store') }}" method="POST">
+                    @csrf
+                    <div class="mb-5">
+                        <label for="category_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nama Kategori
+                        </label>
+                        <input type="text" name="name" id="category_name" required
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-400 focus:outline-none transition-all font-medium"
+                            placeholder="Contoh: Elektronik">
+                    </div>
+                    <div class="mb-6">
+                        <label for="category_description"
+                            class="block text-sm font-semibold text-gray-700 mb-2">
+                            Deskripsi (Opsional)
+                        </label>
+                        <textarea name="description" id="category_description" rows="3"
+                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-400 focus:outline-none transition-all font-medium"
+                            placeholder="Deskripsi kategori..."></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" data-modal-toggle="categoryModal"
+                            class="px-6 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 transition-all">
+                            Batal
+                        </button>
+                        <button type="submit"
+                            class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                            Simpan Kategori
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
-    @push('scripts')
-        <script>
-            // Flowbite handles modals via data attributes
-        </script>
-    @endpush
+@push('scripts')
+    <script>
+        // Flowbite handles modals via data attributes
+    </script>
+@endpush
 </x-layout>
