@@ -15,12 +15,20 @@ class Product extends Model
      * Izinkan mass assignment untuk field yang digunakan di form/store/update.
      */
     protected $fillable = [
-        'name','sku','category_id','supplier_id','price','stock','description','image','attributes'
+        'name',
+        'sku',
+        'category_id',
+        'supplier_id',
+        'selling_price',
+        'stock',
+        'description',
+        'image',
+        'attributes'
     ];
 
     // tambahkan cast
     protected $casts = [
-        'price' => 'decimal:2',
+        'selling_price' => 'decimal:2',
         'stock' => 'integer',
     ];
 

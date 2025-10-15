@@ -38,33 +38,26 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // debug raw input
-        Log::info('Product store request (raw)', ['price_raw' => $request->input('price')]);
+        Log::info('Product store request (raw)', ['selling_price_raw' => $request->input('selling_price')]);
 
-        // normalize price: handle "80.000", "1.234,56", "80000"
-        $rawPrice = $request->input('price', '');
+        // normalize price
+        $rawPrice = $request->input('selling_price', '');
         if ($rawPrice !== null && $rawPrice !== '') {
             $p = preg_replace('/\s+/', '', (string) $rawPrice);
             if (strpos($p, ',') !== false) {
-                // format like 1.234,56 -> remove dots (thousands) and convert comma to dot
                 $p = str_replace('.', '', $p);
                 $p = str_replace(',', '.', $p);
             } elseif (strpos($p, '.') !== false) {
-                // could be "80.000" (thousands) or "123.45" (decimal)
                 $parts = explode('.', $p);
                 $last = end($parts);
                 if (strlen($last) === 3) {
-                    // treat as thousands separators
                     $p = str_replace('.', '', $p);
                 }
-                // else keep dot as decimal separator
             }
-            // final check numeric
             if ($p !== '' && !is_numeric($p)) {
-                return back()->withInput()->withErrors(['price' => 'Format harga tidak valid. Gunakan mis. 80000 atau 80.000 atau 1.234,56']);
+                return back()->withInput()->withErrors(['selling_price' => 'Format harga tidak valid.']);
             }
-            // store normalized numeric string (e.g. "80000" or "1234.56")
-            $request->merge(['price' => $p]);
+            $request->merge(['selling_price' => $p]);
         }
 
         $data = $request->validate([
@@ -72,7 +65,7 @@ class ProductController extends Controller
             'sku' => ['nullable', 'string', Rule::unique('products', 'sku')],
             'category_id' => 'nullable|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'price' => 'nullable|numeric',
+            'selling_price' => 'nullable|numeric', // Ubah dari 'price'
             'stock' => 'nullable|integer',
             'description' => 'nullable|string',
             'image' => 'nullable|image|max:2048',
@@ -82,7 +75,7 @@ class ProductController extends Controller
         if (empty($data['sku'])) {
             do {
                 $sku = 'SKU-' . Str::upper(Str::random(8));
-            } while (Schema::hasTable('products') && Product::where('sku', $sku)->exists());
+            } while (Product::where('sku', $sku)->exists());
             $data['sku'] = $sku;
         }
 
@@ -91,17 +84,16 @@ class ProductController extends Controller
             $data['image'] = $request->file('image')->store('products', 'public');
         }
 
-        // keep only existing DB columns to avoid SQL errors
-        $columns = Schema::hasTable('products') ? Schema::getColumnListing('products') : [];
+        $columns = Schema::getColumnListing('products');
         $data = array_intersect_key($data, array_flip($columns));
 
         try {
             $product = Product::create($data);
-            Log::info('Product created', ['id' => $product->id, 'price_saved' => $product->price ?? null]);
+            Log::info('Product created', ['id' => $product->id, 'selling_price_saved' => $product->selling_price ?? null]);
             return redirect()->route('products.index')->with('success', 'Produk berhasil dibuat.');
         } catch (\Exception $e) {
             Log::error('Product create failed', ['err' => $e->getMessage(), 'data' => $data]);
-            return back()->withInput()->withErrors(['general' => 'Gagal menyimpan produk. Periksa input atau cek log.']);
+            return back()->withInput()->withErrors(['general' => 'Gagal menyimpan produk: ' . $e->getMessage()]);
         }
     }
 
@@ -117,7 +109,7 @@ class ProductController extends Controller
             'sku' => ['nullable', 'string', Rule::unique('products', 'sku')->ignore($product->id)],
             'category_id' => 'nullable|exists:categories,id',
             'supplier_id' => 'nullable|exists:suppliers,id',
-            'price' => 'nullable|numeric',
+            'selling_price' => 'nullable|numeric',
             'stock' => 'nullable|integer',
             'notes' => 'nullable|string'
         ]);
