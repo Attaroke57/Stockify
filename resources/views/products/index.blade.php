@@ -27,13 +27,6 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
     }
 
-    .gradient-text {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
     .fade-in {
         animation: fadeIn 0.6s ease-in;
     }
@@ -55,7 +48,7 @@
 
     .table-row:hover {
         background: rgba(99, 102, 241, 0.05);
-        transform: scale(1.01);
+        transform: scale(1.005);
     }
 
     .action-button {
@@ -64,11 +57,6 @@
 
     .action-button:hover {
         transform: scale(1.1);
-    }
-
-    .modal-backdrop {
-        backdrop-filter: blur(8px);
-        background: rgba(0, 0, 0, 0.5);
     }
 
     .search-input:focus {
@@ -101,22 +89,6 @@
                 </svg>
                 Tambah Produk
             </a>
-
-            <a href="{{ route('products.export') }}"
-                class="glass-button px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-gray-200 shadow-lg flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/>
-                </svg>
-                Export
-            </a>
-
-            <button data-modal-target="importModal" data-modal-toggle="importModal"
-                class="glass-button px-4 py-3 rounded-xl text-sm font-semibold text-gray-700 border border-gray-200 shadow-lg flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                </svg>
-                Import
-            </button>
         </div>
     </div>
 
@@ -128,28 +100,6 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
                 <p class="text-green-800 font-semibold">{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
-
-    @if (session('general'))
-        <div class="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 border-l-4 border-yellow-500 rounded-xl shadow-lg fade-in">
-            <div class="flex items-center">
-                <svg class="w-6 h-6 text-yellow-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
-                <p class="text-yellow-800 font-semibold">{{ session('general') }}</p>
-            </div>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="mb-6 p-4 bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 rounded-xl shadow-lg fade-in">
-            <div class="flex items-center">
-                <svg class="w-6 h-6 text-red-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <p class="text-red-800 font-semibold">{{ session('error') }}</p>
             </div>
         </div>
     @endif
@@ -225,34 +175,32 @@
                                 Rp {{ number_format($product->selling_price ?? 0, 0, ',', '.') }}
                             </td>
                             <td class="px-6 py-4 text-center">
-    <div class="flex items-center justify-center space-x-2">
-        <a href="{{ route('products.show', $product) }}"
-            class="action-button px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 inline-flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-            Detail
-        </a>
-        <a href="{{ route('products.edit', $product) }}"
-            class="action-button px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 inline-flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-            Edit
-        </a>
-        <form action="{{ route('products.destroy', $product) }}" method="POST"
-            class="inline-block" onsubmit="return confirm('⚠️ Yakin ingin menghapus produk ini?')">
-            @csrf @method('DELETE')
-            <button type="submit" class="action-button px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 inline-flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                Hapus
-            </button>
-        </form>
-    </div>
-</td>
+                                <div class="flex items-center justify-center space-x-2">
+                                    <a href="{{ route('products.show', $product) }}"
+                                        class="action-button px-4 py-2 bg-blue-100 text-blue-700 rounded-lg font-semibold hover:bg-blue-200 inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        Detail
+                                    </a>
+                                    <a href="{{ route('products.edit', $product) }}"
+                                        class="action-button px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg font-semibold hover:bg-indigo-200 inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                        </svg>
+                                        Edit
+                                    </a>
+                                    <button type="button"
+                                        onclick="showDeleteModal({{ $product->id }}, '{{ addslashes($product->name) }}')"
+                                        class="action-button px-4 py-2 bg-red-100 text-red-700 rounded-lg font-semibold hover:bg-red-200 inline-flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        Hapus
+                                    </button>
+                                </div>
+                            </td>
                         </tr>
                     @empty
                         <tr>
@@ -280,55 +228,45 @@
     </div>
 </div>
 
-<!-- Import Modal -->
-<div id="importModal" tabindex="-1"
-    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full modal-backdrop">
-    <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
-        <div class="relative glass-card rounded-3xl shadow-2xl">
-            <button type="button"
-                class="absolute top-4 right-4 text-gray-400 hover:bg-gray-200 hover:text-gray-900 rounded-xl p-2 transition-all"
-                data-modal-toggle="importModal">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clip-rule="evenodd" />
-                </svg>
-            </button>
+<!-- Delete Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity bg-black bg-opacity-50 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+        <div class="inline-block align-bottom glass-card rounded-3xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
             <div class="p-8">
                 <div class="flex items-center mb-6">
-                    <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center mr-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center mr-4">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold gradient-text">Import Produk CSV</h3>
+                    <h3 class="text-2xl font-bold text-gray-800">Hapus Produk?</h3>
                 </div>
-                <form action="{{ route('products.import') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <div class="mb-6">
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Pilih File CSV</label>
-                        <input type="file" name="file" accept=".csv" required
-                            class="block w-full text-sm text-gray-700 border-2 border-gray-200 rounded-xl cursor-pointer bg-gray-50 focus:outline-none hover:border-indigo-400 transition-all file:mr-4 file:py-3 file:px-4 file:rounded-l-xl file:border-0 file:bg-gradient-to-r file:from-indigo-600 file:to-purple-600 file:text-white file:font-semibold">
-                    </div>
-                    <div class="flex justify-end gap-3">
-                        <button type="button" data-modal-toggle="importModal"
-                            class="px-6 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 transition-all">
-                            Batal
-                        </button>
+                <p class="text-gray-600 mb-6">Anda yakin ingin menghapus produk <strong id="productName"></strong>? Tindakan ini tidak dapat dibatalkan.</p>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeDeleteModal()"
+                        class="px-6 py-3 border-2 border-gray-200 rounded-xl font-semibold hover:bg-gray-100 transition-all">
+                        Batal
+                    </button>
+                    <form id="deleteForm" method="POST" class="inline">
+                        @csrf @method('DELETE')
                         <button type="submit"
-                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
-                            Import Sekarang
+                            class="px-6 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all">
+                            Ya, Hapus
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add Category Modal -->
+<!-- Category Modal -->
 <div id="categoryModal" tabindex="-1"
-    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full modal-backdrop">
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 w-full md:inset-0 h-modal md:h-full backdrop-blur-sm bg-black/50">
     <div class="relative p-4 w-full max-w-md h-full md:h-auto mx-auto mt-20">
         <div class="relative glass-card rounded-3xl shadow-2xl">
             <button type="button"
@@ -389,9 +327,15 @@
     </div>
 </div>
 
-@push('scripts')
-    <script>
-        // Flowbite handles modals via data attributes
-    </script>
-@endpush
+<script>
+function showDeleteModal(productId, productName) {
+    document.getElementById('productName').textContent = productName;
+    document.getElementById('deleteForm').action = `/products/${productId}`;
+    document.getElementById('deleteModal').classList.remove('hidden');
+}
+
+function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.add('hidden');
+}
+</script>
 </x-layout>
