@@ -146,4 +146,10 @@ class ProductController extends Controller
         // export CSV/xlsx; gunakan paket export atau manual
         return redirect()->back();
     }
+    public function show(Product $product)
+{
+    $product->load(['category', 'supplier']);
+
+    return view('products.show', compact('product'));
+}
 }

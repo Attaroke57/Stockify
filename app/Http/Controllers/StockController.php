@@ -120,4 +120,11 @@ class StockController extends Controller
 
         return redirect()->route('stocks.index')->with('success', 'Transaksi stok berhasil dihapus.');
     }
+
+    public function show($id)
+{
+    $stock = StockTransaction::with(['product', 'supplier'])->findOrFail($id);
+
+    return view('stocks.show', compact('stock'));
+}
 }
