@@ -131,7 +131,7 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $product->delete();
-        return back()->with('success', 'Produk dihapus.');
+        return redirect()->route('products.index')->with('success', 'Produk dihapus.');
     }
 
     public function import(Request $r)
@@ -147,9 +147,9 @@ class ProductController extends Controller
         return redirect()->back();
     }
     public function show(Product $product)
-{
-    $product->load(['category', 'supplier']);
+    {
+        $product->load(['category', 'supplier']);
 
-    return view('products.show', compact('product'));
-}
+        return view('products.show', compact('product'));
+    }
 }
