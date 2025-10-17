@@ -71,6 +71,12 @@ class DashboardController extends Controller
         $outgoingCount = StockTransaction::where('type', 'out')->count();
         $totalStock = Product::sum('stock');
 
+        // Ambil 10 aktivitas terbaru
+        $recentActivities = StockTransaction::with('product')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
         return view('components.dashboard', compact(
             'productCount',
             'incomingCount',
@@ -78,7 +84,8 @@ class DashboardController extends Controller
             'totalStock',
             'labels',
             'values',
-            'range'
+            'range',
+            'recentActivities'
         ));
     }
 

@@ -210,20 +210,53 @@
         </div>
     </div>
 
-    <!-- Aktivitas Terbaru -->
+<!-- Aktivitas Terbaru -->
     <div class="glass-card rounded-3xl shadow-2xl p-8 fade-in">
         <h2 class="text-2xl font-bold gradient-text mb-6">Aktivitas Terbaru</h2>
-        <div class="text-center py-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full mb-4">
-                <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                </svg>
+
+        @if(isset($recentActivities) && $recentActivities->count() > 0)
+            <div class="space-y-4">
+                @foreach($recentActivities as $activity)
+                <div class="flex items-center justify-between p-4 bg-white rounded-xl hover:shadow-md transition-shadow duration-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-3 rounded-xl {{ $activity->type === 'in' ? 'bg-green-100' : 'bg-red-100' }}">
+                            @if($activity->type === 'in')
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/>
+                                </svg>
+                            @else
+                                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/>
+                                </svg>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">{{ $activity->product->name ?? 'Produk tidak ditemukan' }}</p>
+                            <p class="text-sm text-gray-500">
+                                {{ $activity->type === 'in' ? 'Barang Masuk' : 'Barang Keluar' }} •
+                                {{ $activity->quantity }} unit
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-gray-500">{{ $activity->created_at->diffForHumans() }}</p>
+                        <p class="text-xs text-gray-400">{{ $activity->created_at->format('d M Y, H:i') }}</p>
+                    </div>
+                </div>
+                @endforeach
             </div>
-            <p class="text-gray-500 font-medium">Belum ada aktivitas terbaru</p>
-            <p class="text-gray-400 text-sm mt-1">Aktivitas transaksi akan muncul di sini</p>
-        </div>
+        @else
+            <div class="text-center py-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full mb-4">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <p class="text-gray-500 font-medium">Belum ada aktivitas terbaru</p>
+                <p class="text-gray-400 text-sm mt-1">Aktivitas transaksi akan muncul di sini</p>
+            </div>
+        @endif
     </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
