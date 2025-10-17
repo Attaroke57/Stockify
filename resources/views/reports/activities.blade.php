@@ -30,20 +30,63 @@
     }
 
     .activity-item {
-        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
     }
 
     .activity-item:hover {
-        background: rgba(99, 102, 241, 0.03);
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        transform: translateX(4px);
+        border-color: rgba(102, 126, 234, 0.3);
+    }
+
+    .activity-item:hover::before {
+        opacity: 1;
     }
 
     .input-field {
         transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
     }
 
     .input-field:focus {
+        background: rgba(255, 255, 255, 0.95);
         border-color: #667eea;
         box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        animation: fadeIn 0.6s ease backwards;
+    }
+
+    .icon-badge {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        border: 1px solid rgba(102, 126, 234, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:hover .icon-badge {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+        transform: scale(1.1);
     }
 </style>
 
@@ -114,8 +157,8 @@
                     <div class="flex items-start gap-4">
                         <!-- Avatar -->
                         <div class="flex-shrink-0">
-                            <div class="relative inline-flex items-center justify-center w-12 h-12 overflow-hidden bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full border-2 border-indigo-400">
-                                <span class="font-semibold text-indigo-700 text-lg">{{ substr($a->user->name ?? 'U', 0, 1) }}</span>
+                            <div class="avatar relative inline-flex items-center justify-center w-12 h-12 overflow-hidden rounded-xl border-2 border-white shadow-md">
+                                <span class="font-bold text-white text-lg">{{ substr($a->user->name ?? 'U', 0, 1) }}</span>
                             </div>
                         </div>
 
@@ -137,7 +180,7 @@
 
                                 <!-- Activity Icon Badge -->
                                 <div class="flex-shrink-0">
-                                    <span class="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-lg">
+                                    <span class="icon-badge inline-flex items-center justify-center w-10 h-10 rounded-lg">
                                         <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                                         </svg>

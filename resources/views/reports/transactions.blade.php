@@ -30,20 +30,60 @@
     }
 
     .table-row {
-        transition: all 0.2s ease;
+        background: rgba(255, 255, 255, 0.6);
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-bottom: 1px solid rgba(99, 102, 241, 0.1);
     }
 
     .table-row:hover {
-        background: rgba(99, 102, 241, 0.05);
+        background: rgba(255, 255, 255, 0.95);
+        transform: scale(1.01);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
     }
 
     .input-field {
         transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
     }
 
     .input-field:focus {
+        background: rgba(255, 255, 255, 0.95);
         border-color: #667eea;
         box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .btn-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-gradient:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 28px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-light {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(209, 213, 219, 0.5);
+        transition: all 0.3s ease;
+    }
+
+    .btn-light:hover {
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(99, 102, 241, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .row-badge {
+        transition: all 0.3s ease;
+    }
+
+    .table-row:hover .row-badge {
+        transform: scale(1.05);
     }
 </style>
 
@@ -74,13 +114,13 @@
                     <option value="in" @selected(request('type')=='in')>📥 Masuk</option>
                     <option value="out" @selected(request('type')=='out')>📤 Keluar</option>
                 </select>
-                <button class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center">
+                <button class="btn-gradient px-6 py-3 text-white rounded-xl font-semibold flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                     </svg>
                     Filter
                 </button>
-                <a href="{{ route('reports.transactions.export', request()->query()) }}" class="px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all flex items-center">
+                <a href="{{ route('reports.transactions.export', request()->query()) }}" class="btn-light px-6 py-3 text-gray-700 rounded-xl font-semibold flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -116,7 +156,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <span class="px-3 py-1 rounded-lg text-sm font-bold {{ $t->type === 'in' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                <span class="row-badge px-3 py-1 rounded-lg text-sm font-bold {{ $t->type === 'in' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                     {{ $t->type === 'in' ? '📥 Masuk' : '📤 Keluar' }}
                                 </span>
                             </td>
@@ -125,7 +165,7 @@
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-full flex items-center justify-center text-indigo-700 font-semibold text-xs mr-2">
+                                    <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold text-xs mr-2">
                                         {{ substr($t->user->name ?? 'U', 0, 1) }}
                                     </div>
                                     <span class="text-sm text-gray-800">{{ $t->user->name ?? '-' }}</span>
