@@ -92,7 +92,8 @@ class DashboardController extends Controller
     // Endpoint AJAX untuk Chart
     public function getChartData($period = 'minggu')
     {
-        $now = Carbon::now();
+        // Set timezone ke Asia/Jakarta
+        $now = Carbon::now('Asia/Jakarta');
 
         if ($period === 'hari') {
             // Data per jam untuk hari ini
@@ -117,16 +118,16 @@ class DashboardController extends Controller
             $dateFormat = '%Y-%m-%d';
         }
 
-        // Ambil data barang MASUK
-        $stokMasuk = StockTransaction::selectRaw("DATE_FORMAT(created_at, '{$dateFormat}') as grup, SUM(quantity) as total")
+        // Ambil data barang MASUK dengan konversi timezone
+        $stokMasuk = StockTransaction::selectRaw("DATE_FORMAT(CONVERT_TZ(created_at, '+00:00', '+07:00'), '{$dateFormat}') as grup, SUM(quantity) as total")
             ->where('type', 'in')
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('grup')
             ->pluck('total', 'grup')
             ->toArray();
 
-        // Ambil data barang KELUAR
-        $stokKeluar = StockTransaction::selectRaw("DATE_FORMAT(created_at, '{$dateFormat}') as grup, SUM(quantity) as total")
+        // Ambil data barang KELUAR dengan konversi timezone
+        $stokKeluar = StockTransaction::selectRaw("DATE_FORMAT(CONVERT_TZ(created_at, '+00:00', '+07:00'), '{$dateFormat}') as grup, SUM(quantity) as total")
             ->where('type', 'out')
             ->whereBetween('created_at', [$start, $end])
             ->groupBy('grup')
