@@ -219,7 +219,8 @@
                 </div>
             </a>
 
-            <!-- Activity Report Card -->
+            <!-- Activity Report Card - Hanya untuk Admin -->
+            @if(auth()->user()->role === 'admin')
             <a href="{{ route('reports.activities') }}" class="block group">
                 <div class="report-card rounded-2xl shadow-xl p-8 h-full">
                     <div class="flex items-start justify-between mb-8">
@@ -228,7 +229,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
                         </div>
-                        <span class="badge px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full text-xs font-bold shadow-lg">User Activity</span>
+                        <span class="badge px-4 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full text-xs font-bold shadow-lg">Admin Only</span>
                     </div>
                     <h5 class="card-title text-2xl font-bold mb-3">Laporan Aktivitas</h5>
                     <p class="text-gray-600 text-sm mb-6 leading-relaxed">Pantau aktivitas pengguna dalam sistem untuk audit dan keamanan</p>
@@ -240,6 +241,7 @@
                     </div>
                 </div>
             </a>
+            @endif
         </div>
     </div>
 </div>

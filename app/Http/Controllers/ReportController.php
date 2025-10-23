@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Response;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Transaction;
+use App\Models\StockTransaction;
 use App\Models\User;
 use App\Models\Activity;
 
@@ -28,16 +28,17 @@ class ReportController extends Controller
 
         $q = Product::query()->with('category');
 
-        if ($categoryId) $q->where('category_id', $categoryId);
+        if ($categoryId)
+            $q->where('category_id', $categoryId);
 
         // if product has stock column
         if (Schema::hasColumn('products', 'stock')) {
-            $products = $q->select('id','name','sku','category_id','stock')->orderByDesc('stock')->get();
+            $products = $q->select('id', 'name', 'sku', 'category_id', 'stock')->orderByDesc('stock')->get();
         } else {
-            $products = $q->select('id','name','sku','category_id')->get();
+            $products = $q->select('id', 'name', 'sku', 'category_id')->get();
         }
 
-        return view('reports.stock', compact('products','categories','from','to','categoryId'));
+        return view('reports.stock', compact('products', 'categories', 'from', 'to', 'categoryId'));
     }
 
     public function exportStock(Request $r)
@@ -46,10 +47,11 @@ class ReportController extends Controller
 
         $q = Product::query()->with('category');
 
-        if ($categoryId) $q->where('category_id', $categoryId);
+        if ($categoryId)
+            $q->where('category_id', $categoryId);
 
-        $cols = ['ID','Name','SKU','Category','Stock'];
-        $rows = $q->get()->map(function($p){
+        $cols = ['ID', 'Name', 'SKU', 'Category', 'Stock'];
+        $rows = $q->get()->map(function ($p) {
             return [
                 $p->id,
                 $p->name,
@@ -59,10 +61,11 @@ class ReportController extends Controller
             ];
         });
 
-        $callback = function() use ($cols, $rows) {
+        $callback = function () use ($cols, $rows) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, $cols);
-            foreach ($rows as $r) fputcsv($handle, $r);
+            foreach ($rows as $r)
+                fputcsv($handle, $r);
             fclose($handle);
         };
 
@@ -78,18 +81,34 @@ class ReportController extends Controller
         $to = $r->query('to');
         $type = $r->query('type'); // in/out/all
 
-        $q = Schema::hasTable('transactions') ? Transaction::with('product','user')->orderByDesc('created_at') : collect();
-
-        if ($q instanceof \Illuminate\Database\Eloquent\Builder) {
-            if ($type && in_array($type, ['in','out'])) $q->where('type', $type);
-            if ($from) $q->whereDate('created_at', '>=', $from);
-            if ($to) $q->whereDate('created_at', '<=', $to);
-            $transactions = $q->get();
-        } else {
+        // Cek tabel stock_transactions terlebih dahulu
+        if (!Schema::hasTable('stock_transactions')) {
             $transactions = collect();
+            return view('reports.transactions', compact('transactions', 'from', 'to', 'type'));
         }
 
-        return view('reports.transactions', compact('transactions','from','to','type'));
+        // Buat query dengan benar
+        $q = StockTransaction::with('product')->orderByDesc('created_at');
+
+        // Aplikasikan filter type
+        if ($type && in_array($type, ['in', 'out'])) {
+            $q->where('type', $type);
+        }
+
+        // Aplikasikan filter tanggal from
+        if ($from) {
+            $q->whereDate('created_at', '>=', $from);
+        }
+
+        // Aplikasikan filter tanggal to
+        if ($to) {
+            $q->whereDate('created_at', '<=', $to);
+        }
+
+        // Eksekusi query
+        $transactions = $q->get();
+
+        return view('reports.transactions', compact('transactions', 'from', 'to', 'type'));
     }
 
     public function exportTransactions(Request $r)
@@ -98,28 +117,39 @@ class ReportController extends Controller
         $to = $r->query('to');
         $type = $r->query('type');
 
-        $q = Transaction::with('product','user')->orderByDesc('created_at');
-        if ($type && in_array($type, ['in','out'])) $q->where('type', $type);
-        if ($from) $q->whereDate('created_at', '>=', $from);
-        if ($to) $q->whereDate('created_at', '<=', $to);
-        $rows = $q->get()->map(function($t){
+        $q = StockTransaction::with('product')->orderByDesc('created_at');
+
+        if ($type && in_array($type, ['in', 'out'])) {
+            $q->where('type', $type);
+        }
+
+        if ($from) {
+            $q->whereDate('created_at', '>=', $from);
+        }
+
+        if ($to) {
+            $q->whereDate('created_at', '<=', $to);
+        }
+
+        $rows = $q->get()->map(function ($t) {
             return [
                 $t->id,
                 $t->product->name ?? '',
                 $t->type,
                 $t->quantity ?? '',
-                $t->user->name ?? '',
+                $t->date ?? '',
                 $t->created_at,
-                $t->description ?? '',
+                $t->notes ?? '',
             ];
         });
 
-        $cols = ['ID','Product','Type','Quantity','User','Date','Description'];
+        $cols = ['ID', 'Product', 'Type', 'Quantity', 'Transaction Date', 'Created At', 'Notes'];
 
-        $callback = function() use ($cols, $rows) {
+        $callback = function () use ($cols, $rows) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, $cols);
-            foreach ($rows as $r) fputcsv($handle, $r);
+            foreach ($rows as $r)
+                fputcsv($handle, $r);
             fclose($handle);
         };
 
@@ -131,24 +161,47 @@ class ReportController extends Controller
 
     public function activities(Request $r)
     {
+        // Proteksi: Hanya admin yang bisa akses laporan aktivitas
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
         $from = $r->query('from');
         $to = $r->query('to');
         $userId = $r->query('user');
 
-        $q = Schema::hasTable('activities') ? Activity::with('user')->orderByDesc('created_at') : collect();
-
-        if ($q instanceof \Illuminate\Database\Eloquent\Builder) {
-            if ($userId) $q->where('user_id', $userId);
-            if ($from) $q->whereDate('created_at', '>=', $from);
-            if ($to) $q->whereDate('created_at', '<=', $to);
-            $activities = $q->get();
-        } else {
+        // Cek tabel activities terlebih dahulu
+        if (!Schema::hasTable('activities')) {
             $activities = collect();
+            $users = collect();
+            return view('reports.activities', compact('activities', 'users', 'from', 'to', 'userId'));
         }
 
-        $users = Schema::hasTable('users') ? User::orderBy('name')->get() : collect();
+        // Buat query dengan benar
+        $q = Activity::with('user')->orderByDesc('created_at');
 
-        return view('reports.activities', compact('activities','users','from','to','userId'));
+        // Aplikasikan filter user
+        if ($userId) {
+            $q->where('user_id', $userId);
+        }
+
+        // Aplikasikan filter tanggal from
+        if ($from) {
+            $q->whereDate('created_at', '>=', $from);
+        }
+
+        // Aplikasikan filter tanggal to
+        if ($to) {
+            $q->whereDate('created_at', '<=', $to);
+        }
+
+        // Eksekusi query
+        $activities = $q->get();
+
+        // Ambil semua users untuk dropdown filter
+        $users = User::orderBy('name')->get();
+
+        return view('reports.activities', compact('activities', 'users', 'from', 'to', 'userId'));
     }
 
     public function exportActivities(Request $r)
@@ -158,11 +211,14 @@ class ReportController extends Controller
         $userId = $r->query('user');
 
         $q = Activity::with('user')->orderByDesc('created_at');
-        if ($userId) $q->where('user_id', $userId);
-        if ($from) $q->whereDate('created_at', '>=', $from);
-        if ($to) $q->whereDate('created_at', '<=', $to);
+        if ($userId)
+            $q->where('user_id', $userId);
+        if ($from)
+            $q->whereDate('created_at', '>=', $from);
+        if ($to)
+            $q->whereDate('created_at', '<=', $to);
 
-        $rows = $q->get()->map(function($a){
+        $rows = $q->get()->map(function ($a) {
             return [
                 $a->id,
                 $a->user->name ?? '',
@@ -171,12 +227,13 @@ class ReportController extends Controller
             ];
         });
 
-        $cols = ['ID','User','Description','Date'];
+        $cols = ['ID', 'User', 'Description', 'Date'];
 
-        $callback = function() use ($cols, $rows) {
+        $callback = function () use ($cols, $rows) {
             $handle = fopen('php://output', 'w');
             fputcsv($handle, $cols);
-            foreach ($rows as $r) fputcsv($handle, $r);
+            foreach ($rows as $r)
+                fputcsv($handle, $r);
             fclose($handle);
         };
 
