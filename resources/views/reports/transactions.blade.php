@@ -34,6 +34,7 @@
             background: rgba(255, 255, 255, 0.6);
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            cursor: pointer;
         }
 
         .table-row:hover {
@@ -147,11 +148,13 @@
                                 <th class="px-6 py-4 text-right text-sm font-bold">Jumlah</th>
                                 <th class="px-6 py-4 text-left text-sm font-bold">Tanggal</th>
                                 <th class="px-6 py-4 text-left text-sm font-bold">Catatan</th>
+                                <th class="px-6 py-4 text-center text-sm font-bold">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @forelse($transactions as $t)
-                                <tr class="table-row">
+                                <tr class="table-row"
+                                    onclick="window.location.href='{{ route('reports.transactions.show', $t->id) }}'">
                                     <td class="px-6 py-4 text-gray-600 font-semibold">{{ $loop->iteration }}</td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center">
@@ -178,10 +181,20 @@
                                     <td class="px-6 py-4 text-sm text-gray-600">
                                         {{ $t->notes ?? '-' }}
                                     </td>
+                                    <td class="px-6 py-4 text-center" onclick="event.stopPropagation()">
+                                        <a href="{{ route('reports.transactions.show', $t->id) }}"
+                                            class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-indigo-100 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                        </a>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-6 py-12 text-center">
+                                    <td colspan="7" class="px-6 py-12 text-center">
                                         <div class="flex flex-col items-center">
                                             <div
                                                 class="w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mb-4">

@@ -55,6 +55,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('reports/transactions/export', [ReportController::class, 'exportTransactions'])->name('reports.transactions.export');
         Route::get('reports/activities', [ReportController::class, 'activities'])->name('reports.activities');
         Route::get('reports/activities/export', [ReportController::class, 'exportActivities'])->name('reports.activities.export');
+        Route::get('reports/transactions/{id}', [ReportController::class, 'transactionDetail'])->name('reports.transactions.show');
+
     });
 
     // Users - Admin only

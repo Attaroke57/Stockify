@@ -31,7 +31,6 @@ class ReportController extends Controller
         if ($categoryId)
             $q->where('category_id', $categoryId);
 
-        // if product has stock column
         if (Schema::hasColumn('products', 'stock')) {
             $products = $q->select('id', 'name', 'sku', 'category_id', 'stock')->orderByDesc('stock')->get();
         } else {
@@ -79,36 +78,47 @@ class ReportController extends Controller
     {
         $from = $r->query('from');
         $to = $r->query('to');
-        $type = $r->query('type'); // in/out/all
+        $type = $r->query('type');
 
-        // Cek tabel stock_transactions terlebih dahulu
         if (!Schema::hasTable('stock_transactions')) {
             $transactions = collect();
             return view('reports.transactions', compact('transactions', 'from', 'to', 'type'));
         }
 
-        // Buat query dengan benar
         $q = StockTransaction::with('product')->orderByDesc('created_at');
 
-        // Aplikasikan filter type
         if ($type && in_array($type, ['in', 'out'])) {
             $q->where('type', $type);
         }
 
-        // Aplikasikan filter tanggal from
         if ($from) {
             $q->whereDate('created_at', '>=', $from);
         }
 
-        // Aplikasikan filter tanggal to
         if ($to) {
             $q->whereDate('created_at', '<=', $to);
         }
 
-        // Eksekusi query
         $transactions = $q->get();
 
         return view('reports.transactions', compact('transactions', 'from', 'to', 'type'));
+    }
+
+    /**
+     * Tampilkan detail satu transaksi
+     */
+    public function transactionDetail($id)
+    {
+        // Cek tabel terlebih dahulu
+        if (!Schema::hasTable('stock_transactions')) {
+            abort(404, 'Data transaksi tidak ditemukan');
+        }
+
+        // Ambil data transaksi dengan relasi
+        $stock = StockTransaction::with('product', 'product.category')
+            ->findOrFail($id);
+
+        return view('reports.transactions_show', compact('stock'));
     }
 
     public function exportTransactions(Request $r)
@@ -161,7 +171,6 @@ class ReportController extends Controller
 
     public function activities(Request $r)
     {
-        // Proteksi: Hanya admin yang bisa akses laporan aktivitas
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
@@ -170,35 +179,27 @@ class ReportController extends Controller
         $to = $r->query('to');
         $userId = $r->query('user');
 
-        // Cek tabel activities terlebih dahulu
         if (!Schema::hasTable('activities')) {
             $activities = collect();
             $users = collect();
             return view('reports.activities', compact('activities', 'users', 'from', 'to', 'userId'));
         }
 
-        // Buat query dengan benar
         $q = Activity::with('user')->orderByDesc('created_at');
 
-        // Aplikasikan filter user
         if ($userId) {
             $q->where('user_id', $userId);
         }
 
-        // Aplikasikan filter tanggal from
         if ($from) {
             $q->whereDate('created_at', '>=', $from);
         }
 
-        // Aplikasikan filter tanggal to
         if ($to) {
             $q->whereDate('created_at', '<=', $to);
         }
 
-        // Eksekusi query
         $activities = $q->get();
-
-        // Ambil semua users untuk dropdown filter
         $users = User::orderBy('name')->get();
 
         return view('reports.activities', compact('activities', 'users', 'from', 'to', 'userId'));
